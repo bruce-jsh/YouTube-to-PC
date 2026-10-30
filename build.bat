@@ -45,12 +45,13 @@ copy /y licenses\THIRD-PARTY-NOTICES.txt build\payload\licenses\ >nul || goto :f
 
 echo [5/5] installer
 build\pack.exe build\setup-stub.exe build\payload "dist\YouTubeToPC-Setup-%VERSION%.exe" || goto :fail
-copy /y "dist\YouTubeToPC-Setup-%VERSION%.exe" download\ >nul || goto :fail
 
 echo.
 echo Done.
 echo   Installer : dist\YouTubeToPC-Setup-%VERSION%.exe
-echo   Published : download\YouTubeToPC-Setup-%VERSION%.exe
+echo.
+echo Publish it with:
+echo   gh release create v%VERSION% "dist\YouTubeToPC-Setup-%VERSION%.exe" --title "YouTube to PC %VERSION%"
 exit /b 0
 
 :fail
