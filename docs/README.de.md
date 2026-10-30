@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="../res/app.ico" width="96" alt="YouTube to PC">
+<img src="../res/logo.png" width="96" alt="YouTube to PC">
 
 # YouTube to PC
 
