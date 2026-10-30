@@ -1,0 +1,13 @@
+# build output
+/build/
+/dist/
+
+# reference material, not for publishing
+/benchmark-product/
+
+# editor / OS noise
+.vs/
+.vscode/
+*.user
+Thumbs.db
+desktop.ini

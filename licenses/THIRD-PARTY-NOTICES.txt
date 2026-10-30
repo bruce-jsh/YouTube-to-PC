@@ -1,0 +1,48 @@
+YouTube to PC includes the following third-party programs, which are run as separate
+executables from the "tools" folder.
+
+------------------------------------------------------------------------------
+yt-dlp  (tools\yt-dlp.exe)
+https://github.com/yt-dlp/yt-dlp
+
+yt-dlp is released into the public domain under The Unlicense.
+The Windows executable bundles third-party Python packages; see the yt-dlp
+repository for their licenses.
+
+------------------------------------------------------------------------------
+FFmpeg  (tools\ffmpeg\*)
+https://ffmpeg.org
+
+This FFmpeg build is licensed under the GNU General Public License, version 3
+(see ffmpeg-LICENSE.txt in this folder). The build was produced by
+https://github.com/BtbN/FFmpeg-Builds. The corresponding source code is available
+from https://ffmpeg.org/download.html and https://github.com/BtbN/FFmpeg-Builds.
+
+------------------------------------------------------------------------------
+QuickJS-ng  (tools\qjs.exe)
+https://github.com/quickjs-ng/quickjs
+
+The MIT License (MIT)
+
+Copyright (c) 2017-2026 Fabrice Bellard
+Copyright (c) 2017-2024 Charlie Gordon
+Copyright (c) 2023-2026 Ben Noordhuis
+Copyright (c) 2023-2026 Saúl Ibarra Corretgé
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
