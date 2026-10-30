@@ -10,9 +10,9 @@ Copia un enlace y pulsa un botón. Eso es todo.
 
 <br>
 
-### [⬇️ Descargar: ir al instalador](../download/)
+### [⬇️ Descargar YouTubeToPC-Setup-1.2.0.exe](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.2.0/YouTubeToPC-Setup-1.2.0.exe)
 
-[**Obtener YouTubeToPC-Setup-1.2.0.exe**](https://github.com/bruce-jsh/YouTube-to-PC/raw/main/download/YouTubeToPC-Setup-1.2.0.exe) · 1,2 MB · Windows 10/11 (64 bits)
+1,3 MB · Windows 10/11 (64 bits) · pulsa el botón y el archivo se descarga al momento
 
 <br>
 
@@ -74,7 +74,7 @@ La instalación no cuela otro software ni toca la configuración de tu navegador
 
 ## Instalación
 
-1. Entra en **[Descargar](../download/)** y consigue `YouTubeToPC-Setup-1.2.0.exe`.
+1. Pulsa el botón de descarga de arriba. El instalador se guarda enseguida.
 2. Ejecútalo.
 3. Elige idioma y carpeta de instalación, y pulsa **Instalar**.
 

@@ -10,9 +10,9 @@
 
 <br>
 
-### [⬇️ 다운로드: 설치 파일 받으러 가기](../download/)
+### [⬇️ YouTubeToPC-Setup-1.2.0.exe 내려받기](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.2.0/YouTubeToPC-Setup-1.2.0.exe)
 
-[**YouTubeToPC-Setup-1.2.0.exe 바로 내려받기**](https://github.com/bruce-jsh/YouTube-to-PC/raw/main/download/YouTubeToPC-Setup-1.2.0.exe) · 1.2 MB · Windows 10/11 (64비트)
+1.3 MB · Windows 10/11 (64비트) · 버튼을 누르면 바로 내려받습니다
 
 <br>
 
@@ -74,7 +74,7 @@ Windows에 원래 들어 있는 기능만 사용하는 Win32 프로그램이라,
 
 ## 설치 방법
 
-1. 위의 **[다운로드](../download/)** 에서 `YouTubeToPC-Setup-1.2.0.exe` 를 받습니다.
+1. 위의 다운로드 버튼을 누릅니다. 설치 파일이 바로 저장됩니다.
 2. 파일을 실행합니다.
 3. 언어와 설치 위치를 고르고 **설치**를 누릅니다.
 

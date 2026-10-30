@@ -10,9 +10,9 @@ Sao chép liên kết, nhấn một nút. Chỉ vậy thôi.
 
 <br>
 
-### [⬇️ Tải xuống: đến trình cài đặt](../download/)
+### [⬇️ Tải YouTubeToPC-Setup-1.2.0.exe](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.2.0/YouTubeToPC-Setup-1.2.0.exe)
 
-[**Lấy YouTubeToPC-Setup-1.2.0.exe**](https://github.com/bruce-jsh/YouTube-to-PC/raw/main/download/YouTubeToPC-Setup-1.2.0.exe) · 1,2 MB · Windows 10/11 (64-bit)
+1,3 MB · Windows 10/11 (64-bit) · nhấn nút là tệp tải về ngay
 
 <br>
 
@@ -75,7 +75,7 @@ Khi cài đặt không lén thêm chương trình khác, cũng không đụng đ
 
 ## Cài đặt
 
-1. Mở **[Tải xuống](../download/)** ở trên và lấy `YouTubeToPC-Setup-1.2.0.exe`.
+1. Nhấn nút tải xuống ở trên. Tệp cài đặt được lưu ngay lập tức.
 2. Chạy tệp đó.
 3. Chọn ngôn ngữ và thư mục cài đặt, rồi nhấn **Cài đặt**.
 

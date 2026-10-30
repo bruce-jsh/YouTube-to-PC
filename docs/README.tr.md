@@ -10,9 +10,9 @@ Bir bağlantı kopyalayın, tek bir düğmeye basın. Hepsi bu.
 
 <br>
 
-### [⬇️ İndir: kurulum dosyasına git](../download/)
+### [⬇️ YouTubeToPC-Setup-1.2.0.exe indir](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.2.0/YouTubeToPC-Setup-1.2.0.exe)
 
-[**YouTubeToPC-Setup-1.2.0.exe dosyasını al**](https://github.com/bruce-jsh/YouTube-to-PC/raw/main/download/YouTubeToPC-Setup-1.2.0.exe) · 1,2 MB · Windows 10/11 (64 bit)
+1,3 MB · Windows 10/11 (64 bit) · düğmeye basın, dosya hemen insin
 
 <br>
 
@@ -75,7 +75,7 @@ Kurulum, araya başka yazılım sıkıştırmaz ve tarayıcı ayarlarınıza dok
 
 ## Kurulum
 
-1. Yukarıdaki **[İndir](../download/)** bağlantısını açıp `YouTubeToPC-Setup-1.2.0.exe` dosyasını alın.
+1. Yukarıdaki indirme düğmesine basın. Kurulum dosyası hemen kaydedilir.
 2. Dosyayı çalıştırın.
 3. Dilinizi ve kurulum klasörünü seçip **Kur** düğmesine basın.
 

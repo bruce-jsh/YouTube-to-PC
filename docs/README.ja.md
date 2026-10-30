@@ -10,9 +10,9 @@
 
 <br>
 
-### [⬇️ ダウンロード: インストーラーはこちら](../download/)
+### [⬇️ YouTubeToPC-Setup-1.2.0.exe をダウンロード](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.2.0/YouTubeToPC-Setup-1.2.0.exe)
 
-[**YouTubeToPC-Setup-1.2.0.exe を入手**](https://github.com/bruce-jsh/YouTube-to-PC/raw/main/download/YouTubeToPC-Setup-1.2.0.exe) · 1.2 MB · Windows 10/11 (64 ビット)
+1.3 MB · Windows 10/11 (64 ビット) · ボタンを押すとすぐに保存されます
 
 <br>
 
@@ -74,7 +74,7 @@ Windows に元から入っている機能だけを使う Win32 プログラム�
 
 ## インストール方法
 
-1. 上の **[ダウンロード](../download/)** から `YouTubeToPC-Setup-1.2.0.exe` を入手します。
+1. 上のダウンロード ボタンを押します。インストーラーがすぐに保存されます。
 2. ファイルを実行します。
 3. 言語とインストール先を選び、**インストール** を押します。
 

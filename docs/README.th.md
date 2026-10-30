@@ -10,9 +10,9 @@
 
 <br>
 
-### [⬇️ ดาวน์โหลด: ไปที่ตัวติดตั้ง](../download/)
+### [⬇️ ดาวน์โหลด YouTubeToPC-Setup-1.2.0.exe](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.2.0/YouTubeToPC-Setup-1.2.0.exe)
 
-[**รับ YouTubeToPC-Setup-1.2.0.exe**](https://github.com/bruce-jsh/YouTube-to-PC/raw/main/download/YouTubeToPC-Setup-1.2.0.exe) · 1.2 MB · Windows 10/11 (64 บิต)
+1.3 MB · Windows 10/11 (64 บิต) · กดปุ่มแล้วไฟล์จะดาวน์โหลดทันที
 
 <br>
 
@@ -75,7 +75,7 @@
 
 ## วิธีติดตั้ง
 
-1. เปิด **[ดาวน์โหลด](../download/)** ด้านบน แล้วรับไฟล์ `YouTubeToPC-Setup-1.2.0.exe`
+1. กดปุ่มดาวน์โหลดด้านบน ไฟล์ติดตั้งจะถูกบันทึกทันที
 2. เปิดไฟล์ที่ได้
 3. เลือกภาษาและตำแหน่งติดตั้ง จากนั้นกด **ติดตั้ง**
 

@@ -10,9 +10,9 @@
 
 <br>
 
-### [⬇️ Татаж авах: суулгах файл руу очих](../download/)
+### [⬇️ YouTubeToPC-Setup-1.2.0.exe татах](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.2.0/YouTubeToPC-Setup-1.2.0.exe)
 
-[**YouTubeToPC-Setup-1.2.0.exe авах**](https://github.com/bruce-jsh/YouTube-to-PC/raw/main/download/YouTubeToPC-Setup-1.2.0.exe) · 1.2 МБ · Windows 10/11 (64 бит)
+1.3 МБ · Windows 10/11 (64 бит) · товчийг дарахад шууд татагдана
 
 <br>
 
@@ -76,7 +76,7 @@
 
 ## Суулгах
 
-1. Дээрх **[Татаж авах](../download/)** холбоосыг нээж `YouTubeToPC-Setup-1.2.0.exe` файлыг авна.
+1. Дээрх татах товчийг дарна. Суулгах файл шууд хадгалагдана.
 2. Файлыг ажиллуулна.
 3. Хэл болон суулгах хавтсаа сонгоод **Суулгах** товчийг дарна.
 

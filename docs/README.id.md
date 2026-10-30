@@ -10,9 +10,9 @@ Salin tautan, tekan satu tombol. Itu saja.
 
 <br>
 
-### [⬇️ Unduh: menuju pemasang](../download/)
+### [⬇️ Unduh YouTubeToPC-Setup-1.2.0.exe](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.2.0/YouTubeToPC-Setup-1.2.0.exe)
 
-[**Ambil YouTubeToPC-Setup-1.2.0.exe**](https://github.com/bruce-jsh/YouTube-to-PC/raw/main/download/YouTubeToPC-Setup-1.2.0.exe) · 1,2 MB · Windows 10/11 (64-bit)
+1,3 MB · Windows 10/11 (64-bit) · tekan tombolnya, berkas langsung terunduh
 
 <br>
 
@@ -76,7 +76,7 @@ Pemasangan tidak menyelipkan perangkat lunak lain dan tidak mengubah pengaturan 
 
 ## Cara memasang
 
-1. Buka **[Unduh](../download/)** di atas dan ambil `YouTubeToPC-Setup-1.2.0.exe`.
+1. Tekan tombol unduh di atas. Pemasang langsung tersimpan.
 2. Jalankan berkasnya.
 3. Pilih bahasa dan folder pemasangan, lalu tekan **Pasang**.
 
