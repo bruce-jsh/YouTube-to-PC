@@ -1,5 +1,6 @@
 #include "common.h"
 #include <urlmon.h>
+#include <winhttp.h>
 #include <cstdarg>
 #include <cwchar>
 #include <cwctype>
@@ -389,6 +390,120 @@ bool RecycleFiles(const std::vector<std::wstring>& files) {
     op.pFrom = list.c_str();
     op.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_SILENT | FOF_NOERRORUI;
     return SHFileOperationW(&op) == 0;
+}
+
+// ============================================================ network
+
+int CompareVersions(const std::wstring& a, const std::wstring& b) {
+    auto parts = [](const std::wstring& s) {
+        std::vector<int> v;
+        for (auto& p : Split(s, L'.')) v.push_back(_wtoi(p.c_str()));
+        while (v.size() < 4) v.push_back(0);
+        return v;
+    };
+    auto va = parts(a), vb = parts(b);
+    for (size_t i = 0; i < 4; ++i)
+        if (va[i] != vb[i]) return va[i] < vb[i] ? -1 : 1;
+    return 0;
+}
+
+namespace {
+struct Inet {
+    HINTERNET h = nullptr;
+    ~Inet() { if (h) WinHttpCloseHandle(h); }
+};
+}  // namespace
+
+// Fetches a small document. Used for the release check, so the timeouts are
+// short: an update check must never leave the app hanging.
+bool HttpGetText(const std::wstring& url, std::string& out) {
+    out.clear();
+    wchar_t host[256] = {}, path[2048] = {};
+    URL_COMPONENTS uc{};
+    uc.dwStructSize = sizeof uc;
+    uc.lpszHostName = host;
+    uc.dwHostNameLength = (DWORD)(sizeof host / sizeof host[0]) - 1;
+    uc.lpszUrlPath = path;
+    uc.dwUrlPathLength = (DWORD)(sizeof path / sizeof path[0]) - 1;
+    if (!WinHttpCrackUrl(url.c_str(), 0, 0, &uc)) return false;
+
+    Inet ses, con, req;
+    ses.h = WinHttpOpen(L"YouTubeToPC/" APP_VERSION, WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY, WINHTTP_NO_PROXY_NAME,
+                        WINHTTP_NO_PROXY_BYPASS, 0);
+    if (!ses.h) return false;
+    WinHttpSetTimeouts(ses.h, 8000, 8000, 12000, 12000);
+    con.h = WinHttpConnect(ses.h, host, uc.nPort, 0);
+    if (!con.h) return false;
+    DWORD flags = uc.nScheme == INTERNET_SCHEME_HTTPS ? WINHTTP_FLAG_SECURE : 0;
+    req.h = WinHttpOpenRequest(con.h, L"GET", path, nullptr, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, flags);
+    if (!req.h) return false;
+    const wchar_t* headers = L"Accept: application/vnd.github+json\r\nX-GitHub-Api-Version: 2022-11-28\r\n";
+    if (!WinHttpSendRequest(req.h, headers, (DWORD)-1, WINHTTP_NO_REQUEST_DATA, 0, 0, 0)) return false;
+    if (!WinHttpReceiveResponse(req.h, nullptr)) return false;
+
+    DWORD status = 0, size = sizeof status;
+    WinHttpQueryHeaders(req.h, WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER, WINHTTP_HEADER_NAME_BY_INDEX,
+                        &status, &size, WINHTTP_NO_HEADER_INDEX);
+    if (status != 200) return false;
+
+    for (;;) {
+        DWORD avail = 0;
+        if (!WinHttpQueryDataAvailable(req.h, &avail) || avail == 0) break;
+        size_t had = out.size();
+        out.resize(had + avail);
+        DWORD got = 0;
+        if (!WinHttpReadData(req.h, &out[had], avail, &got)) return false;
+        out.resize(had + got);
+        if (out.size() > 4u * 1024 * 1024) break;  // the release JSON is tiny
+    }
+    return !out.empty();
+}
+
+namespace {
+// Reports download progress through urlmon and lets the caller abort.
+class DlProgress : public IBindStatusCallback {
+public:
+    using Fn = std::function<bool(long long done, long long total)>;
+    explicit DlProgress(Fn fn) : fn_(std::move(fn)) {}
+    STDMETHODIMP QueryInterface(REFIID riid, void** out) override {
+        if (riid == IID_IUnknown || riid == IID_IBindStatusCallback) {
+            *out = static_cast<IBindStatusCallback*>(this);
+            return S_OK;
+        }
+        *out = nullptr;
+        return E_NOINTERFACE;
+    }
+    STDMETHODIMP_(ULONG) AddRef() override { return 2; }
+    STDMETHODIMP_(ULONG) Release() override { return 1; }
+    STDMETHODIMP OnStartBinding(DWORD, IBinding*) override { return S_OK; }
+    STDMETHODIMP GetPriority(LONG*) override { return E_NOTIMPL; }
+    STDMETHODIMP OnLowResource(DWORD) override { return S_OK; }
+    STDMETHODIMP OnProgress(ULONG now, ULONG max, ULONG, LPCWSTR) override {
+        return (fn_ && !fn_(now, max)) ? E_ABORT : S_OK;
+    }
+    STDMETHODIMP OnStopBinding(HRESULT, LPCWSTR) override { return S_OK; }
+    STDMETHODIMP GetBindInfo(DWORD*, BINDINFO*) override { return S_OK; }
+    STDMETHODIMP OnDataAvailable(DWORD, DWORD, FORMATETC*, STGMEDIUM*) override { return S_OK; }
+    STDMETHODIMP OnObjectAvailable(REFIID, IUnknown*) override { return S_OK; }
+
+private:
+    Fn fn_;
+};
+}  // namespace
+
+// Writes to a .part file first so a half-finished download can never be mistaken
+// for a usable one.
+bool DownloadToFile(const std::wstring& url, const std::wstring& dest,
+                    const std::function<bool(long long done, long long total)>& progress) {
+    DlProgress cb(progress);
+    std::wstring tmp = dest + L".part";
+    DeleteFileW(tmp.c_str());
+    if (SUCCEEDED(URLDownloadToFileW(nullptr, url.c_str(), tmp.c_str(), 0, &cb)) && FileSize(tmp) > 0) {
+        DeleteFileW(dest.c_str());
+        if (MoveFileW(tmp.c_str(), dest.c_str())) return true;
+    }
+    DeleteFileW(tmp.c_str());
+    return false;
 }
 
 std::wstring GetText(HWND h) {

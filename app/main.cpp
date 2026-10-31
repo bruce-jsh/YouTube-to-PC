@@ -1,4 +1,7 @@
 #include "model.h"
+#include "json.h"
+#include <thread>
+#include <atomic>
 
 namespace {
 
@@ -21,9 +24,11 @@ enum {
     IDM_OPEN_AUDIO_DIR,
     IDM_EXIT,
     IDM_SELECT_ALL,
-    IDM_DELETE,
+    IDM_DELETE,        // drops the list entry only
+    IDM_DELETE_FILE,   // drops the entry and sends the file to the Recycle Bin
     IDM_CLEAR_DONE,
     IDM_DELETE_ALL,
+    IDM_DELETE_ALL_FILE,
     IDM_TAB0 = 210,
     IDM_SORT0 = 220,
     IDM_SETTINGS = 230,
@@ -31,6 +36,7 @@ enum {
     IDM_RETRY_ALL = 232,
     IDM_STOP_ALL,
     IDM_ABOUT,
+    IDM_APP_UPDATE,
     IDM_PLAY = 300,
     IDM_SHOW_FOLDER,
     IDM_COPY_LINK,
@@ -44,13 +50,27 @@ enum {
 };
 
 enum { MODE_DEFAULT, MODE_QUICK, MODE_DIALOG };
-enum { TIMER_SAVE = 1, TIMER_HINT = 2, TIMER_AUTOUPDATE = 3 };
+enum { TIMER_SAVE = 1, TIMER_HINT = 2, TIMER_AUTOUPDATE = 3, TIMER_MENUHOVER = 4, TIMER_MENUWATCH = 5 };
+// Long enough that sliding the pointer across the bar on the way somewhere else
+// does not fling a menu open.
+constexpr UINT kMenuHoverDelay = 250;
 constexpr ULONG_PTR COPYDATA_LINKS = 0x59545043;  // 'YTPC'
 
 const int kTabName[5] = {S_TAB_ALL, S_TAB_VIDEO, S_TAB_AUDIO, S_TAB_PLAYLIST, S_TAB_CHANNEL};
 const int kSortName[5] = {S_SORT_NEW, S_SORT_OLD, S_SORT_TITLE, S_SORT_SIZE, S_SORT_LENGTH};
 const int kMenuName[5] = {S_MENU_FILE, S_MENU_EDIT, S_MENU_VIEW, S_MENU_TOOLS, S_MENU_HELP};
-const wchar_t kMenuKey[5] = {L'F', L'E', L'V', L'T', L'H'};
+
+// CharUpper rather than towupper: the C locale leaves Cyrillic alone, which
+// would break Alt+Ф for Russian and Mongolian.
+wchar_t UpChar(wchar_t c) { return (wchar_t)(UINT_PTR)CharUpperW((LPWSTR)(UINT_PTR)c); }
+
+// The Alt letter is whatever follows the & in the translated title.
+wchar_t MenuKey(int i) {
+    const wchar_t* s = T(kMenuName[i]);
+    for (const wchar_t* p = s; *p; ++p)
+        if (*p == L'&' && p[1] && p[1] != L'&') return UpChar(p[1]);
+    return 0;
+}
 
 HWND g_hwnd, g_btnPaste, g_cbKind, g_cbQuality, g_cbFormat, g_cbSub, g_cbAudio, g_cbDir, g_btnOpenDir, g_btnSettings;
 HWND g_filter, g_cbSort, g_list, g_tip;
@@ -73,6 +93,11 @@ int g_comboH = 24, g_menuH = 30, g_hdrH = 140, g_tabsY = 140, g_tabsH = 48, g_li
 RECT g_rcHint, g_rcToggle, g_rcFilter, g_rcStatus, g_rcTabsArea, g_rcTab[5], g_rcMenuBar, g_rcMenu[5];
 int g_menuHover = -1, g_menuOpen = -1;
 bool g_menuTracking = false;
+// While a menu is open the pointer decides what happens next: sliding onto
+// another title switches, leaving the bar closes. Keyboard-opened menus stay
+// put until the mouse actually moves, so a stray nudge does not shut them.
+bool g_menuByMouse = false;
+POINT g_menuAnchor{};
 std::vector<std::pair<RECT, int>> g_labels;
 std::wstring g_statusText;
 
@@ -80,6 +105,9 @@ Tools g_tools;
 std::wstring g_ytdlpVer;
 int g_versionProc = 0, g_updateProc = 0;
 bool g_updateSilent = false;
+// Set while the app checks for or downloads a new version of itself; shown on
+// the right of the status bar in place of the yt-dlp version.
+std::wstring g_appUpdateMsg;
 struct PendingLink {
     std::wstring url;
     int mode, forceKind;
@@ -312,7 +340,7 @@ void Layout() {
     g_rcMenuBar = {0, 0, cx, g_menuH};
     int mx = S(10);
     for (int i = 0; i < 5; ++i) {
-        int w = TextWidth(hdc, g_font, T(kMenuName[i])) + S(22);
+        int w = TextWidth(hdc, g_font, StripMn(T(kMenuName[i]))) + S(22);
         g_rcMenu[i] = {mx, 0, mx + w, g_menuH};
         mx += w;
     }
@@ -392,7 +420,7 @@ void PaintMain(HDC hdc) {
             InflateRect(&r, 0, -S(3));
             FillRound(mem, r, S(4), clr.hover);
         }
-        DrawTextIn(mem, T(kMenuName[i]), g_rcMenu[i], on ? clr.text : clr.sub, g_font, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+        DrawTextMn(mem, T(kMenuName[i]), g_rcMenu[i], on ? clr.text : clr.sub, g_font, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
     }
 
     if (!g_hint.empty()) {
@@ -451,7 +479,9 @@ void PaintMain(HDC hdc) {
     DrawTextIn(mem, g_statusText, st1, clr.sub, g_fontSmall, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS);
     std::wstring right;
     COLORREF rcColor = clr.faint;
-    if (g_tools.ytdlp.empty()) {
+    if (!g_appUpdateMsg.empty()) {
+        right = g_appUpdateMsg;
+    } else if (g_tools.ytdlp.empty()) {
         right = T(S_STATUS_NO_YTDLP);
         rcColor = clr.danger;
     } else if (g_updateProc) {
@@ -1272,36 +1302,52 @@ void CancelItems(const std::vector<int>& ids) {
     ScheduleSave();
 }
 
-void DeleteItems(const std::vector<int>& ids, bool all) {
-    if (ids.empty()) return;
-    bool anyFile = false;
+std::vector<int> AllIds() {
+    std::vector<int> all;
+    for (auto& up : g_items) all.push_back(up->id);
+    return all;
+}
+
+// True when at least one of these items actually has a file on disk, which is
+// what decides whether offering "delete the file too" makes any sense.
+bool AnyFileOnDisk(const std::vector<int>& ids) {
     for (int id : ids) {
         Item* it = FindItem(id);
-        if (it && it->st == St::Done && FileExists(it->file)) anyFile = true;
+        if (it && it->st == St::Done && FileExists(it->file)) return true;
     }
+    return false;
+}
+
+// withFiles says which of the two menu entries the user picked: the list alone,
+// or the list and the downloaded files. Nothing is hidden behind a checkbox.
+void DeleteItems(const std::vector<int>& ids, bool all, bool withFiles) {
+    if (ids.empty()) return;
+    if (withFiles && !AnyFileOnDisk(ids)) withFiles = false;
     TASKDIALOGCONFIG tc{};
     tc.cbSize = sizeof tc;
     tc.hwndParent = g_hwnd;
     tc.hInstance = g_inst;
     tc.dwFlags = TDF_ALLOW_DIALOG_CANCELLATION | TDF_POSITION_RELATIVE_TO_WINDOW;
     tc.pszWindowTitle = APP_NAME;
-    std::wstring main = all ? Fmt(T(S_MSG_DEL_ALL), (int)ids.size())
-                            : ids.size() == 1 ? std::wstring(T(S_MSG_DEL_ONE)) : Fmt(T(S_MSG_DEL_N), (int)ids.size());
+    int n = (int)ids.size();
+    std::wstring main;
+    if (withFiles)
+        main = all ? Fmt(T(S_MSG_DELF_ALL), n) : n == 1 ? std::wstring(T(S_MSG_DELF_ONE)) : Fmt(T(S_MSG_DELF_N), n);
+    else
+        main = all ? Fmt(T(S_MSG_DEL_ALL), n) : n == 1 ? std::wstring(T(S_MSG_DEL_ONE)) : Fmt(T(S_MSG_DEL_N), n);
     tc.pszMainInstruction = main.c_str();
-    tc.pszContent = T(S_MSG_DEL_CONTENT);
+    tc.pszContent = T(withFiles ? S_MSG_DELF_CONTENT : S_MSG_DEL_CONTENT);
     TASKDIALOG_BUTTON btns[] = {{IDOK, T(S_CM_DELETE)}, {IDCANCEL, T(S_BTN_CANCEL)}};
     tc.pButtons = btns;
     tc.cButtons = 2;
-    tc.nDefaultButton = IDOK;
-    if (anyFile) tc.pszVerificationText = T(S_MSG_DEL_VERIFY);
+    tc.nDefaultButton = withFiles ? IDCANCEL : IDOK;  // losing files deserves a deliberate click
     int btn = 0;
-    BOOL alsoFiles = FALSE;
-    if (FAILED(TaskDialogIndirect(&tc, &btn, nullptr, &alsoFiles)) || btn != IDOK) return;
+    if (FAILED(TaskDialogIndirect(&tc, &btn, nullptr, nullptr)) || btn != IDOK) return;
     std::vector<std::wstring> files;
     for (int id : ids) {
         Item* it = FindItem(id);
         if (!it) continue;
-        if (alsoFiles && it->st == St::Done && !it->file.empty()) files.push_back(it->file);
+        if (withFiles && it->st == St::Done && !it->file.empty()) files.push_back(it->file);
         RemoveItem(id);
     }
     if (!files.empty()) RecycleFiles(files);
@@ -1309,6 +1355,8 @@ void DeleteItems(const std::vector<int>& ids, bool all) {
     ScheduleSave();
     StartQueued();
 }
+
+void DeleteAllItems(bool withFiles) { DeleteItems(AllIds(), true, withFiles); }
 
 void OpenSelected() {
     auto ids = SelectedIds();
@@ -1458,17 +1506,22 @@ HMENU BuildPopup(int index) {
         add(S_MI_EXIT, IDM_EXIT);
         break;
     case 1: {
-        bool hasSel = SendMessageW(g_list, LB_GETSELCOUNT, 0, 0) > 0;
+        std::vector<int> sel = SelectedIds();
         add(S_MI_SELECT_ALL, IDM_SELECT_ALL, L"Ctrl+A");
-        add(S_MI_DELETE, IDM_DELETE, L"Del");
-        if (!hasSel) EnableMenuItem(m, IDM_DELETE, MF_BYCOMMAND | MF_GRAYED);
+        AppendMenuW(m, MF_SEPARATOR, 0, nullptr);
+        add(S_CM_DEL_LIST, IDM_DELETE, L"Del");
+        add(S_CM_DEL_FILE, IDM_DELETE_FILE, L"Shift+Del");
+        if (sel.empty()) EnableMenuItem(m, IDM_DELETE, MF_BYCOMMAND | MF_GRAYED);
+        if (!AnyFileOnDisk(sel)) EnableMenuItem(m, IDM_DELETE_FILE, MF_BYCOMMAND | MF_GRAYED);
         AppendMenuW(m, MF_SEPARATOR, 0, nullptr);
         add(S_MI_CLEAR_DONE, IDM_CLEAR_DONE);
         add(S_MI_DELETE_ALL, IDM_DELETE_ALL);
+        add(S_MI_DELETE_ALL_FILES, IDM_DELETE_ALL_FILE);
         if (g_items.empty()) {
             EnableMenuItem(m, IDM_CLEAR_DONE, MF_BYCOMMAND | MF_GRAYED);
             EnableMenuItem(m, IDM_DELETE_ALL, MF_BYCOMMAND | MF_GRAYED);
         }
+        if (!AnyFileOnDisk(AllIds())) EnableMenuItem(m, IDM_DELETE_ALL_FILE, MF_BYCOMMAND | MF_GRAYED);
         break;
     }
     case 2: {
@@ -1490,14 +1543,19 @@ HMENU BuildPopup(int index) {
         add(S_MI_UPDATE, IDM_UPDATE_YTDLP);
         break;
     default:
+        add(S_MI_APP_UPDATE, IDM_APP_UPDATE);
+        AppendMenuW(m, MF_SEPARATOR, 0, nullptr);
         add(S_MI_ABOUT, IDM_ABOUT);
         break;
     }
     return m;
 }
 
-void OpenMenu(int index) {
+void OpenMenu(int index, bool byMouse) {
     if (index < 0 || index > 4) return;
+    g_menuByMouse = byMouse;
+    GetCursorPos(&g_menuAnchor);
+    KillTimer(g_hwnd, TIMER_MENUHOVER);
     for (;;) {
         g_menuOpen = index;
         InvalidateRect(g_hwnd, &g_rcMenuBar, FALSE);
@@ -1505,7 +1563,11 @@ void OpenMenu(int index) {
         HMENU m = BuildPopup(index);
         POINT p{g_rcMenu[index].left, g_rcMenu[index].bottom};
         ClientToScreen(g_hwnd, &p);
+        // TrackPopupMenu runs its own loop but still dispatches our timer, which
+        // is how the pointer can switch or close the menu while it is up.
+        SetTimer(g_hwnd, TIMER_MENUWATCH, 60, nullptr);
         int cmd = TrackPopupMenu(m, TPM_RETURNCMD | TPM_LEFTBUTTON, p.x, p.y, 0, g_hwnd, nullptr);
+        KillTimer(g_hwnd, TIMER_MENUWATCH);
         DestroyMenu(m);
         g_menuOpen = -1;
         InvalidateRect(g_hwnd, &g_rcMenuBar, FALSE);
@@ -1513,7 +1575,7 @@ void OpenMenu(int index) {
             SendMessageW(g_hwnd, WM_COMMAND, cmd, 0);
             return;
         }
-        // clicking another title while a menu is open switches to it
+        // moving or clicking onto another title switches to it
         POINT cur;
         GetCursorPos(&cur);
         ScreenToClient(g_hwnd, &cur);
@@ -1522,7 +1584,39 @@ void OpenMenu(int index) {
             if (i != index && PtInRect(&g_rcMenu[i], cur)) next = i;
         if (next < 0) return;
         index = next;
+        g_menuByMouse = true;
     }
+}
+
+// Decides, while a menu is open, whether the pointer has moved somewhere that
+// should switch menus or close them. Returns true when the menu should end.
+bool MenuShouldYield() {
+    static int away = 0;
+    POINT cur;
+    GetCursorPos(&cur);
+    if (!g_menuByMouse) {
+        // Opened from the keyboard: ignore the mouse until it really moves, so
+        // a knock of the desk does not shut the menu.
+        if (abs(cur.x - g_menuAnchor.x) < 8 && abs(cur.y - g_menuAnchor.y) < 8) return false;
+        g_menuByMouse = true;
+    }
+    HWND under = WindowFromPoint(cur);
+    wchar_t cls[32] = {};
+    if (under) GetClassNameW(under, cls, 32);
+    if (wcscmp(cls, L"#32768") == 0) {  // on the popup or one of its submenus
+        away = 0;
+        return false;
+    }
+    POINT c = cur;
+    ScreenToClient(g_hwnd, &c);
+    for (int i = 0; i < 5; ++i)
+        if (PtInRect(&g_rcMenu[i], c)) {
+            away = 0;
+            return i != g_menuOpen;  // sliding onto a neighbour switches at once
+        }
+    // Off the bar and off the popup. Wait a moment before closing: cutting the
+    // corner on the way down to a long menu passes through dead space.
+    return ++away >= 5;
 }
 
 void ShowContextMenu(POINT pt) {
@@ -1533,9 +1627,16 @@ void ShowContextMenu(POINT pt) {
         if (accel) s += std::wstring(L"\t") + accel;
         AppendMenuW(m, flags, id, s.c_str());
     };
+    // The two ways to delete are always side by side, so it is plain which one
+    // only tidies the list and which one also throws the file away.
+    auto addDeleteAll = [&] {
+        add(S_MI_DELETE_ALL, IDM_DELETE_ALL, MF_STRING | (g_items.empty() ? MF_GRAYED : 0));
+        add(S_MI_DELETE_ALL_FILES, IDM_DELETE_ALL_FILE, MF_STRING | (AnyFileOnDisk(AllIds()) ? 0 : MF_GRAYED));
+    };
     if (ids.empty()) {
         add(S_MI_PASTE, IDM_PASTE, MF_STRING, L"Ctrl+V");
-        add(S_MI_DELETE_ALL, IDM_DELETE_ALL, MF_STRING | (g_items.empty() ? MF_GRAYED : 0));
+        AppendMenuW(m, MF_SEPARATOR, 0, nullptr);
+        addDeleteAll();
     } else if (ids.size() == 1) {
         Item* it = FindItem(ids[0]);
         if (!it) {
@@ -1569,16 +1670,21 @@ void ShowContextMenu(POINT pt) {
         AppendMenuW(m, MF_SEPARATOR, 0, nullptr);
         if (IsActive(it) && it->st != St::Choosing) add(S_CM_CANCEL_DL, IDM_CANCEL);
         else if (!IsActive(it)) add(done ? S_CM_REDO : S_CM_RETRY, IDM_RETRY);
-        add(S_CM_DELETE, IDM_DELETE, MF_STRING, L"Del");
-        add(S_MI_DELETE_ALL, IDM_DELETE_ALL);
+        add(S_CM_DEL_LIST, IDM_DELETE, MF_STRING, L"Del");
+        add(S_CM_DEL_FILE, IDM_DELETE_FILE, MF_STRING | (AnyFileOnDisk(ids) ? 0 : MF_GRAYED), L"Shift+Del");
+        AppendMenuW(m, MF_SEPARATOR, 0, nullptr);
+        addDeleteAll();
     } else {
         AppendMenuW(m, MF_STRING, IDM_COPY_LINK, Fmt(T(S_CM_COPY_LINK_N), (int)ids.size()).c_str());
         AppendMenuW(m, MF_SEPARATOR, 0, nullptr);
         add(S_CM_REDO, IDM_RETRY);
         add(S_CM_CANCEL_DL, IDM_CANCEL);
         AppendMenuW(m, MF_SEPARATOR, 0, nullptr);
-        AppendMenuW(m, MF_STRING, IDM_DELETE, (Fmt(T(S_CM_DELETE_N), (int)ids.size()) + L"\tDel").c_str());
-        add(S_MI_DELETE_ALL, IDM_DELETE_ALL);
+        AppendMenuW(m, MF_STRING, IDM_DELETE, (Fmt(T(S_CM_DEL_LIST_N), (int)ids.size()) + L"\tDel").c_str());
+        AppendMenuW(m, MF_STRING | (AnyFileOnDisk(ids) ? 0 : MF_GRAYED), IDM_DELETE_FILE,
+                    (Fmt(T(S_CM_DEL_FILE_N), (int)ids.size()) + L"\tShift+Del").c_str());
+        AppendMenuW(m, MF_SEPARATOR, 0, nullptr);
+        addDeleteAll();
     }
     int cmd = TrackPopupMenu(m, TPM_RETURNCMD | TPM_RIGHTBUTTON, pt.x, pt.y, 0, g_hwnd, nullptr);
     DestroyMenu(m);
@@ -1602,6 +1708,171 @@ void OpenSettings() {
     if (g_tools.ytdlp != oldYtdlp) RunVersionCheck();
     ApplyAppearance(uiChanged);
     StartQueued();
+}
+
+// ====================================================================== self-update
+//
+// The installer already knows how to upgrade in place and leaves settings.ini
+// and the download history untouched, so updating means fetching the current
+// release and handing it the folder this copy runs from.
+
+constexpr const wchar_t* kReleaseApi = L"https://api.github.com/repos/bruce-jsh/YouTube-to-PC/releases/latest";
+
+struct UpdateInfo {
+    std::wstring version;  // tag without the leading v
+    std::wstring url;      // installer asset
+    std::wstring file;     // where it was saved
+};
+
+enum { UPD_IDLE, UPD_CHECKING, UPD_DOWNLOADING };
+int g_updState = UPD_IDLE;
+UpdateInfo g_upd;
+std::atomic<bool> g_updCancel{false};
+
+void SetUpdateMsg(const std::wstring& s) {
+    g_appUpdateMsg = s;
+    InvalidateRect(g_hwnd, &g_rcStatus, FALSE);
+}
+
+// Picks the .exe asset out of the release JSON. Anything else means the release
+// was published differently and we should not guess.
+bool ParseRelease(const std::string& json, UpdateInfo& out) {
+    JValue root;
+    if (!JParser(json).parse(root) || root.t != JValue::Obj) return false;
+    std::wstring tag = W(root["tag_name"].str());
+    if (!tag.empty() && (tag[0] == L'v' || tag[0] == L'V')) tag.erase(0, 1);
+    if (tag.empty()) return false;
+    const JValue& assets = root["assets"];
+    for (auto& a : assets.a) {
+        std::wstring name = W(a["name"].str());
+        if (name.size() > 4 && Lower(name).rfind(L".exe") == name.size() - 4) {
+            out.url = W(a["browser_download_url"].str());
+            break;
+        }
+    }
+    if (out.url.empty()) return false;
+    out.version = tag;
+    return true;
+}
+
+void StartInstaller() {
+    std::wstring args = L"/dir " + QuoteArg(ExeDir()) + L" /lang " + kLangs[g_set.lang].code + L" /launch";
+    SHELLEXECUTEINFOW ei{sizeof ei};
+    ei.fMask = SEE_MASK_NOCLOSEPROCESS;
+    // /dir makes setup install straight away, which skips its own elevation
+    // step, so ask for the rights here when the folder is not ours to write.
+    ei.lpVerb = (IsProcessElevated() || DirWritable(ExeDir())) ? L"open" : L"runas";
+    ei.lpFile = g_upd.file.c_str();
+    ei.lpParameters = args.c_str();
+    ei.nShow = SW_SHOWNORMAL;
+    if (!ShellExecuteExW(&ei)) {
+        MessageBoxW(GetLastActivePopup(g_hwnd), T(S_UPD_START_FAILED), APP_NAME, MB_ICONWARNING);
+        return;
+    }
+    if (ei.hProcess) CloseHandle(ei.hProcess);
+    // Setup asks us to quit and waits, so there is nothing to do but let it.
+}
+
+void OnUpdateReady() {
+    SetUpdateMsg(L"");
+    TASKDIALOGCONFIG tc{};
+    tc.cbSize = sizeof tc;
+    tc.hwndParent = g_hwnd;
+    tc.hInstance = g_inst;
+    tc.dwFlags = TDF_ALLOW_DIALOG_CANCELLATION | TDF_POSITION_RELATIVE_TO_WINDOW;
+    tc.pszWindowTitle = APP_NAME;
+    tc.pszMainInstruction = T(S_UPD_READY);
+    tc.pszContent = T(S_UPD_READY_BODY);
+    TASKDIALOG_BUTTON btns[] = {{IDOK, T(S_UPD_INSTALL)}, {IDCANCEL, T(S_UPD_LATER)}};
+    tc.pButtons = btns;
+    tc.cButtons = 2;
+    tc.nDefaultButton = IDOK;
+    int btn = 0;
+    if (SUCCEEDED(TaskDialogIndirect(&tc, &btn, nullptr, nullptr)) && btn == IDOK) StartInstaller();
+}
+
+// Installers from earlier updates are of no further use once a newer one is on
+// the way, and they are over a megabyte each.
+void RemoveOldInstallers(const std::wstring& dir, const std::wstring& keep) {
+    WIN32_FIND_DATAW fd{};
+    HANDLE h = FindFirstFileW(PathJoin(dir, L"YouTubeToPC-Setup-*.exe").c_str(), &fd);
+    if (h == INVALID_HANDLE_VALUE) return;
+    do {
+        if (_wcsicmp(fd.cFileName, keep.c_str()) != 0) DeleteFileW(PathJoin(dir, fd.cFileName).c_str());
+    } while (FindNextFileW(h, &fd));
+    FindClose(h);
+}
+
+void StartUpdateDownload() {
+    g_updState = UPD_DOWNLOADING;
+    g_updCancel = false;
+    SetUpdateMsg(Fmt(T(S_UPD_DOWNLOADING), 0));
+    std::wstring url = g_upd.url;
+    std::wstring name = L"YouTubeToPC-Setup-" + g_upd.version + L".exe";
+    std::wstring dest = PathJoin(LocalDataDir(), name);
+    EnsureDir(LocalDataDir());
+    RemoveOldInstallers(LocalDataDir(), name);
+    HWND hwnd = g_hwnd;
+    std::thread([url, dest, hwnd] {
+        int last = -1;
+        bool ok = DownloadToFile(url, dest, [&](long long done, long long total) {
+            if (g_updCancel) return false;
+            int pct = total > 0 ? (int)(done * 100 / total) : 0;
+            if (pct != last) {
+                last = pct;
+                PostMessageW(hwnd, WM_APP_UPDATE_PROGRESS, pct, 0);
+            }
+            return true;
+        });
+        PostMessageW(hwnd, WM_APP_UPDATE_DONE, ok ? 1 : 0, (LPARAM) new std::wstring(ok ? dest : L""));
+    }).detach();
+}
+
+void OnUpdateChecked(bool ok) {
+    g_updState = UPD_IDLE;
+    SetUpdateMsg(L"");
+    HWND owner = GetLastActivePopup(g_hwnd);
+    if (!ok) {
+        MessageBoxW(owner, T(S_UPD_CHECK_FAILED), APP_NAME, MB_ICONWARNING);
+        return;
+    }
+    if (CompareVersions(g_upd.version, APP_VERSION) <= 0) {
+        MessageBoxW(owner, Fmt(T(S_UPD_LATEST), APP_VERSION).c_str(), APP_NAME, MB_ICONINFORMATION);
+        return;
+    }
+    TASKDIALOGCONFIG tc{};
+    tc.cbSize = sizeof tc;
+    tc.hwndParent = g_hwnd;
+    tc.hInstance = g_inst;
+    tc.dwFlags = TDF_ALLOW_DIALOG_CANCELLATION | TDF_POSITION_RELATIVE_TO_WINDOW | TDF_USE_HICON_MAIN;
+    tc.hMainIcon = g_iconBig;
+    tc.pszWindowTitle = APP_NAME;
+    std::wstring head = Fmt(T(S_UPD_FOUND), g_upd.version.c_str());
+    std::wstring body = Fmt(T(S_UPD_FOUND_BODY), APP_VERSION);
+    tc.pszMainInstruction = head.c_str();
+    tc.pszContent = body.c_str();
+    TASKDIALOG_BUTTON btns[] = {{IDOK, T(S_UPD_NOW)}, {IDCANCEL, T(S_UPD_LATER)}};
+    tc.pButtons = btns;
+    tc.cButtons = 2;
+    tc.nDefaultButton = IDOK;
+    int btn = 0;
+    if (SUCCEEDED(TaskDialogIndirect(&tc, &btn, nullptr, nullptr)) && btn == IDOK) StartUpdateDownload();
+}
+
+void CheckAppUpdate() {
+    if (g_updState != UPD_IDLE) {
+        MessageBoxW(GetLastActivePopup(g_hwnd), T(S_UPD_BUSY), APP_NAME, MB_ICONINFORMATION);
+        return;
+    }
+    g_updState = UPD_CHECKING;
+    SetUpdateMsg(T(S_UPD_CHECKING));
+    HWND hwnd = g_hwnd;
+    std::thread([hwnd] {
+        std::string body;
+        auto* info = new UpdateInfo;
+        bool ok = HttpGetText(kReleaseApi, body) && ParseRelease(body, *info);
+        PostMessageW(hwnd, WM_APP_UPDATE_CHECKED, ok ? 1 : 0, (LPARAM)info);
+    }).detach();
 }
 
 void ShowAbout() {
@@ -1628,13 +1899,10 @@ void OnMenuCommand(int id) {
     case IDM_OPEN_AUDIO_DIR: EnsureDir(g_set.dirAudio); ShellOpen(g_set.dirAudio); break;
     case IDM_EXIT: PostMessageW(g_hwnd, WM_CLOSE, 0, 0); break;
     case IDM_SELECT_ALL: SendMessageW(g_list, LB_SETSEL, TRUE, -1); break;
-    case IDM_DELETE: DeleteItems(ids, false); break;
-    case IDM_DELETE_ALL: {
-        std::vector<int> all;
-        for (auto& up : g_items) all.push_back(up->id);
-        DeleteItems(all, true);
-        break;
-    }
+    case IDM_DELETE: DeleteItems(ids, false, false); break;
+    case IDM_DELETE_FILE: DeleteItems(ids, false, true); break;
+    case IDM_DELETE_ALL: DeleteAllItems(false); break;
+    case IDM_DELETE_ALL_FILE: DeleteAllItems(true); break;
     case IDM_CLEAR_DONE: {
         std::vector<int> done;
         for (auto& up : g_items)
@@ -1661,6 +1929,7 @@ void OnMenuCommand(int id) {
         break;
     }
     case IDM_ABOUT: ShowAbout(); break;
+    case IDM_APP_UPDATE: CheckAppUpdate(); break;
     case IDM_PLAY: OpenSelected(); break;
     case IDM_SHOW_FOLDER:
         if (first) {
@@ -1806,10 +2075,10 @@ void OnCreate(HWND hwnd) {
 
 bool HandleKey(MSG& m) {
     if (m.message == WM_SYSCHAR) {
-        wchar_t c = (wchar_t)towupper((wint_t)m.wParam);
+        wchar_t c = UpChar((wchar_t)m.wParam);
         for (int i = 0; i < 5; ++i)
-            if (c == kMenuKey[i]) {
-                OpenMenu(i);
+            if (c && c == MenuKey(i)) {
+                OpenMenu(i, false);
                 return true;
             }
         return false;
@@ -1829,7 +2098,7 @@ bool HandleKey(MSG& m) {
         break;
     case VK_F10:
         if (!ctrl && !shift) {
-            OpenMenu(0);
+            OpenMenu(0, false);
             return true;
         }
         break;
@@ -1851,7 +2120,7 @@ bool HandleKey(MSG& m) {
         if (ctrl) { SetFocus(g_filter); SendMessageW(g_filter, EM_SETSEL, 0, -1); return true; }
         break;
     case VK_DELETE:
-        if (!inEdit) { DeleteItems(SelectedIds(), false); return true; }
+        if (!inEdit) { DeleteItems(SelectedIds(), false, shift); return true; }
         break;
     case VK_OEM_COMMA:
         if (ctrl) { OpenSettings(); return true; }
@@ -1946,6 +2215,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
         if (hot != g_menuHover) {
             g_menuHover = hot;
             InvalidateRect(hwnd, &g_rcMenuBar, FALSE);
+            // Resting on a title opens it without a click, the way the menu
+            // bars in most Windows programs behave once you are in them.
+            if (hot >= 0 && g_menuOpen < 0) SetTimer(hwnd, TIMER_MENUHOVER, kMenuHoverDelay, nullptr);
+            else KillTimer(hwnd, TIMER_MENUHOVER);
         }
         if (!g_menuTracking) {
             TRACKMOUSEEVENT t{sizeof t, TME_LEAVE, hwnd, 0};
@@ -1956,6 +2229,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     }
     case WM_MOUSELEAVE:
         g_menuTracking = false;
+        KillTimer(hwnd, TIMER_MENUHOVER);
         if (g_menuHover >= 0) {
             g_menuHover = -1;
             InvalidateRect(hwnd, &g_rcMenuBar, FALSE);
@@ -1965,7 +2239,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
         POINT pt{GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
         for (int i = 0; i < 5; ++i)
             if (PtInRect(&g_rcMenu[i], pt)) {
-                OpenMenu(i);
+                OpenMenu(i, true);
                 return 0;
             }
         if (PtInRect(&g_rcToggle, pt)) {
@@ -2151,6 +2425,27 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     case WM_APP_NEXT_DIALOG:
         PumpDialogs();
         return 0;
+    case WM_APP_UPDATE_CHECKED: {
+        std::unique_ptr<UpdateInfo> info((UpdateInfo*)lp);
+        if (wp && info) g_upd = *info;
+        OnUpdateChecked(wp != 0);
+        return 0;
+    }
+    case WM_APP_UPDATE_PROGRESS:
+        if (g_updState == UPD_DOWNLOADING) SetUpdateMsg(Fmt(T(S_UPD_DOWNLOADING), (int)wp));
+        return 0;
+    case WM_APP_UPDATE_DONE: {
+        std::unique_ptr<std::wstring> path((std::wstring*)lp);
+        g_updState = UPD_IDLE;
+        SetUpdateMsg(L"");
+        if (!wp || !path || path->empty()) {
+            if (!g_updCancel) MessageBoxW(GetLastActivePopup(hwnd), T(S_UPD_DL_FAILED), APP_NAME, MB_ICONWARNING);
+            return 0;
+        }
+        g_upd.file = *path;
+        OnUpdateReady();
+        return 0;
+    }
     case WM_APP_TRAY:
         switch (LOWORD(lp)) {
         case NIN_BALLOONUSERCLICK:
@@ -2183,6 +2478,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
         } else if (wp == TIMER_AUTOUPDATE) {
             KillTimer(hwnd, TIMER_AUTOUPDATE);
             MaybeAutoUpdate();
+        } else if (wp == TIMER_MENUHOVER) {
+            KillTimer(hwnd, TIMER_MENUHOVER);
+            if (g_menuHover >= 0 && g_menuOpen < 0 && GetForegroundWindow() == hwnd) OpenMenu(g_menuHover, true);
+        } else if (wp == TIMER_MENUWATCH) {
+            if (g_menuOpen >= 0 && MenuShouldYield()) EndMenu();
         }
         return 0;
     case WM_CLOSE: {
@@ -2206,6 +2506,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
             int btn = 0;
             if (FAILED(TaskDialogIndirect(&tc, &btn, nullptr, nullptr)) || btn != IDOK) return 0;
         }
+        g_updCancel = true;  // let a running update download stop on its own
         SaveWindowPlacement();
         SaveSettings();
         SaveHistory(g_items);

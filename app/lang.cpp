@@ -37,6 +37,13 @@ static const wchar_t* const kTableMnTr[][2] = {
 static_assert(sizeof kTableMnTr / sizeof kTableMnTr[0] == S_COUNT, "strings-mn-tr.inc must have one row per string");
 static_assert((int)S_COUNT_MNTR == (int)S_COUNT, "strings-mn-tr.inc must list the same ids as strings.inc");
 
+// Equal row counts are not enough: a block that moved would still compile and
+// then hand Mongolian and Turkish readers somebody else's sentence. This pins
+// every id to the same index in both files.
+#define Y(id, ...) static_assert((int)id##_MNTR == (int)id, "strings-mn-tr.inc is out of order at " #id);
+#include "strings-mn-tr.inc"
+#undef Y
+
 // 0-12 index kTable, 13 is Mongolian and 14 is Turkish in kTableMnTr.
 static const int kColumn[LANG_COUNT] = {
     0,   // ko

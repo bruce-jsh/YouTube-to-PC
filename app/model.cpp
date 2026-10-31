@@ -17,7 +17,7 @@ const std::vector<Choice> kAudioQuality = {
     {-1, L"192 kbps", L"192K"},      {-1, L"128 kbps", L"128K"},
 };
 const std::vector<Choice> kVideoFormat = {{-1, L"MP4", L"mp4"}, {-1, L"MKV", L"mkv"}};
-const std::vector<Choice> kAudioFormat = {{-1, L"MP3", L"mp3"}, {-1, L"M4A", L"m4a"}, {-1, L"OPUS", L"opus"}};
+const std::vector<Choice> kAudioFormat = {{-1, L"MP3", L"mp3"}, {-1, L"M4A", L"m4a"}};
 const std::vector<Choice> kNameTemplates = {
     {S_NT_TITLE, nullptr, L"%(title)s"},
     {S_NT_CHANNEL_TITLE, nullptr, L"%(channel,uploader|?)s - %(title)s"},

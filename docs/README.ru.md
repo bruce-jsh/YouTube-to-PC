@@ -10,7 +10,7 @@
 
 <br>
 
-### [⬇️ Скачать YouTubeToPC-Setup-1.2.0.exe](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.2.0/YouTubeToPC-Setup-1.2.0.exe)
+### [⬇️ Скачать YouTubeToPC-Setup-1.3.0.exe](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.0/YouTubeToPC-Setup-1.3.0.exe)
 
 1,3 МБ · Windows 10/11 (64 бит) · нажмите кнопку, файл загрузится сразу
 

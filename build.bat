@@ -6,7 +6,7 @@ setlocal EnableExtensions
 cd /d "%~dp0"
 
 rem ---- configuration -------------------------------------------------------
-set "VERSION=1.2.0"
+set "VERSION=1.3.0"
 set "MSYS_BIN=C:\msys64\ucrt64\bin"
 rem --------------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ if not exist "%MSYS_BIN%\g++.exe" (
 )
 set "PATH=%MSYS_BIN%;%PATH%"
 set "CXXFLAGS=-std=c++17 -O2 -municode -Wall -Wno-unused-parameter -Wno-missing-field-initializers -Wno-cast-function-type"
-set "LIBS=-lcomctl32 -lgdiplus -lshlwapi -luxtheme -ldwmapi -lurlmon -lole32 -loleaut32 -luuid -lshell32 -lcomdlg32 -lgdi32 -luser32 -ladvapi32"
+set "LIBS=-lcomctl32 -lgdiplus -lshlwapi -luxtheme -ldwmapi -lurlmon -lwinhttp -lole32 -loleaut32 -luuid -lshell32 -lcomdlg32 -lgdi32 -luser32 -ladvapi32"
 set "APP_SRC=app/main.cpp app/ui.cpp app/util.cpp app/model.cpp app/dialogs.cpp app/lang.cpp"
 
 if not exist build\obj mkdir build\obj

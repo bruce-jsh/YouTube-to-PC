@@ -10,7 +10,7 @@ Link kopieren, eine Schaltfläche drücken. Mehr nicht.
 
 <br>
 
-### [⬇️ YouTubeToPC-Setup-1.2.0.exe herunterladen](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.2.0/YouTubeToPC-Setup-1.2.0.exe)
+### [⬇️ YouTubeToPC-Setup-1.3.0.exe herunterladen](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.0/YouTubeToPC-Setup-1.3.0.exe)
 
 1,3 MB · Windows 10/11 (64 Bit) · auf die Schaltfläche klicken, die Datei wird sofort geladen
 

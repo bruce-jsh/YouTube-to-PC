@@ -34,7 +34,7 @@
 #include <functional>
 
 #define APP_NAME     L"YouTube to PC"
-#define APP_VERSION  L"1.2.0"
+#define APP_VERSION  L"1.3.0"
 #define APP_DIRNAME  L"YouTubeToPC"
 #define APP_FOLDER   L"YouTube to PC"
 #define MAIN_CLASS   L"YouTubeToPC.Main"
@@ -46,6 +46,9 @@ enum : UINT {
     WM_APP_THUMB,
     WM_APP_TRAY,
     WM_APP_NEXT_DIALOG,
+    WM_APP_UPDATE_CHECKED,   // lp: new UpdateInfo*, wp: 1 on success
+    WM_APP_UPDATE_PROGRESS,  // wp: percent
+    WM_APP_UPDATE_DONE,      // lp: new std::wstring* with the saved path
 };
 
 #include "lang.h"
@@ -101,6 +104,7 @@ std::wstring FormatSize(long long bytes);
 std::wstring FormatDuration(double seconds);
 std::wstring FormatEta(double seconds);
 long long NowMs();
+int CompareVersions(const std::wstring& a, const std::wstring& b);  // <0, 0 or >0
 
 // ---- files & paths ----
 std::wstring ExeDir();
@@ -133,6 +137,12 @@ bool PickFile(HWND owner, std::wstring& path, const wchar_t* title, const wchar_
 bool RecycleFiles(const std::vector<std::wstring>& files);
 std::wstring GetText(HWND h);
 
+// ---- network ----
+bool HttpGetText(const std::wstring& url, std::string& out);  // small documents only
+// progress returns false to abort; it runs on the calling thread
+bool DownloadToFile(const std::wstring& url, const std::wstring& dest,
+                    const std::function<bool(long long done, long long total)>& progress);
+
 // ---- child processes (yt-dlp, ffmpeg) ----
 struct ProcLine { int id; std::wstring text; };
 struct ProcExit { int id; DWORD code; bool canceled; std::string output; };
@@ -160,6 +170,9 @@ void FillSolid(HDC hdc, const RECT& r, COLORREF c);
 void FillRound(HDC hdc, const RECT& r, int radius, COLORREF fill, COLORREF border = CLR_INVALID, float borderWidth = 1.0f);
 void FillEllipse(HDC hdc, const RECT& r, COLORREF fill);
 void DrawTextIn(HDC hdc, const std::wstring& s, RECT r, COLORREF color, HFONT font, UINT flags);
+// Same, but & marks the next character for underlining, as in menu titles.
+void DrawTextMn(HDC hdc, const std::wstring& s, RECT r, COLORREF color, HFONT font, UINT flags);
+std::wstring StripMn(const std::wstring& s);  // drops the & so the text can be measured
 int TextWidth(HDC hdc, HFONT font, const std::wstring& s);
 int FontHeight(HFONT font);
 void ComboSet(HWND cb, const std::vector<std::wstring>& items, int sel);

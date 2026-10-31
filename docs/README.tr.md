@@ -10,7 +10,7 @@ Bir bağlantı kopyalayın, tek bir düğmeye basın. Hepsi bu.
 
 <br>
 
-### [⬇️ YouTubeToPC-Setup-1.2.0.exe indir](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.2.0/YouTubeToPC-Setup-1.2.0.exe)
+### [⬇️ YouTubeToPC-Setup-1.3.0.exe indir](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.0/YouTubeToPC-Setup-1.3.0.exe)
 
 1,3 MB · Windows 10/11 (64 bit) · düğmeye basın, dosya hemen insin
 
@@ -59,7 +59,7 @@ Kurulum, araya başka yazılım sıkıştırmaz ve tarayıcı ayarlarınıza dok
 ## Neler yapar
 
 - **Bağlantı Yapıştır** düğmesine basın, indirme başlasın (`Ctrl+V` de çalışır)
-- **Video** (MP4, MKV) ya da **müzik** (MP3, M4A, OPUS) seçin
+- **Video** (MP4, MKV) ya da **müzik** (MP3, M4A) seçin
 - Kalite **en iyisinden** 144p'ye kadar; ses en iyisinden 128 kbps'ye kadar
 - **Oynatma listesinin ya da kanalın tamamını** indirin veya yalnızca istediğiniz videoları işaretleyin
 - **Altyazı ve ses parçası** seçin: yaklaşık 85 dil, her biri kendi yazısıyla gösterilir

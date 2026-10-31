@@ -10,7 +10,7 @@
 
 <br>
 
-### [⬇️ YouTubeToPC-Setup-1.2.0.exe 내려받기](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.2.0/YouTubeToPC-Setup-1.2.0.exe)
+### [⬇️ YouTubeToPC-Setup-1.3.0.exe 내려받기](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.0/YouTubeToPC-Setup-1.3.0.exe)
 
 1.3 MB · Windows 10/11 (64비트) · 버튼을 누르면 바로 내려받습니다
 
@@ -58,7 +58,7 @@ Windows에 원래 들어 있는 기능만 사용하는 Win32 프로그램이라,
 ## 주요 기능
 
 - **링크 붙여넣기** 버튼 하나로 바로 다운로드 (`Ctrl+V`도 됩니다)
-- **영상**(MP4·MKV) 또는 **음악**(MP3·M4A·OPUS) 선택
+- **영상**(MP4·MKV) 또는 **음악**(MP3·M4A) 선택
 - 화질은 **최고 화질**부터 144p까지, 음질은 최고부터 128 kbps까지
 - **재생목록·채널 통째로** 받기, 받을 영상만 골라서 받기
 - **자막·오디오 트랙** 선택 (약 85개 언어, 각 언어의 원어 이름으로 표시)

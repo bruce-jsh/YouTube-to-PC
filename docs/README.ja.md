@@ -10,7 +10,7 @@
 
 <br>
 
-### [⬇️ YouTubeToPC-Setup-1.2.0.exe をダウンロード](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.2.0/YouTubeToPC-Setup-1.2.0.exe)
+### [⬇️ YouTubeToPC-Setup-1.3.0.exe をダウンロード](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.0/YouTubeToPC-Setup-1.3.0.exe)
 
 1.3 MB · Windows 10/11 (64 ビット) · ボタンを押すとすぐに保存されます
 
@@ -58,7 +58,7 @@ Windows に元から入っている機能だけを使う Win32 プログラム�
 ## できること
 
 - **リンクを貼り付け** ボタンひとつでダウンロード開始（`Ctrl+V` でも可）
-- **動画**（MP4・MKV）または **音楽**（MP3・M4A・OPUS）を選択
+- **動画**（MP4・MKV）または **音楽**（MP3・M4A）を選択
 - 画質は **最高画質** から 144p まで、音質は最高から 128 kbps まで
 - **再生リストやチャンネルをまるごと**、または必要な動画だけを選んで取得
 - **字幕と音声トラック** を選択（約 85 言語、それぞれの言語の表記で表示）

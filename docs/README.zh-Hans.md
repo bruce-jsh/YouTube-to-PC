@@ -10,7 +10,7 @@
 
 <br>
 
-### [⬇️ 下载 YouTubeToPC-Setup-1.2.0.exe](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.2.0/YouTubeToPC-Setup-1.2.0.exe)
+### [⬇️ 下载 YouTubeToPC-Setup-1.3.0.exe](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.0/YouTubeToPC-Setup-1.3.0.exe)
 
 1.3 MB · Windows 10/11（64 位）· 点击按钮即可直接下载
 
@@ -58,7 +58,7 @@
 ## 功能
 
 - 按一下 **粘贴链接** 就开始下载（也可以用 `Ctrl+V`）
-- 可选 **视频**（MP4、MKV）或 **音乐**（MP3、M4A、OPUS）
+- 可选 **视频**（MP4、MKV）或 **音乐**（MP3、M4A）
 - 画质从 **最佳画质** 到 144p，音质从最佳到 128 kbps
 - **整个播放列表或频道** 一次下载，也可只勾选需要的视频
 - 选择 **字幕和音轨**: 约 85 种语言，均以各自的文字显示

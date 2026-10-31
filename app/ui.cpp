@@ -220,6 +220,25 @@ void DrawTextIn(HDC hdc, const std::wstring& s, RECT r, COLORREF color, HFONT fo
     SelectObject(hdc, old);
 }
 
+void DrawTextMn(HDC hdc, const std::wstring& s, RECT r, COLORREF color, HFONT font, UINT flags) {
+    HGDIOBJ old = SelectObject(hdc, font);
+    SetTextColor(hdc, color);
+    SetBkMode(hdc, TRANSPARENT);
+    DrawTextW(hdc, s.c_str(), (int)s.size(), &r, flags);  // no DT_NOPREFIX: & underlines
+    SelectObject(hdc, old);
+}
+
+std::wstring StripMn(const std::wstring& s) {
+    std::wstring r;
+    r.reserve(s.size());
+    for (size_t i = 0; i < s.size(); ++i) {
+        if (s[i] == L'&' && i + 1 < s.size() && s[i + 1] == L'&') { r += L'&'; ++i; continue; }
+        if (s[i] == L'&') continue;
+        r += s[i];
+    }
+    return r;
+}
+
 int TextWidth(HDC hdc, HFONT font, const std::wstring& s) {
     HGDIOBJ old = SelectObject(hdc, font);
     SIZE sz{};
