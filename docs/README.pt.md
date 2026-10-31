@@ -14,6 +14,8 @@ Copie um link, clique num botão. É só isso.
 
 1,3 MB · Windows 10/11 (64 bits) · clique no botão e o arquivo baixa na hora
 
+O Windows ou o navegador bloquearam? [Veja como resolver](troubleshooting.pt.md).
+
 <br>
 
 [한국어](README.ko.md) ·

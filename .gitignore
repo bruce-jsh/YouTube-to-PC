@@ -5,6 +5,11 @@
 # reference material, not for publishing
 /benchmark-product/
 
+# raw test captures: they show real desktops, so only the cropped ones in
+# docs/images are published
+/eng_captures/
+/일반계정테스트/
+
 # editor / OS noise
 .vs/
 .vscode/

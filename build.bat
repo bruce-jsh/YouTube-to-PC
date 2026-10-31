@@ -29,7 +29,7 @@ g++ %CXXFLAGS% -mwindows %APP_SRC% build/obj/app.res.o -o build/YouTubeToPC.exe 
 
 echo [2/5] installer stub
 windres -i setup/setup.rc -O coff -o build/obj/setup.res.o || goto :fail
-g++ %CXXFLAGS% -mwindows -Iapp setup/setup.cpp app/ui.cpp app/util.cpp app/lang.cpp build/obj/setup.res.o -o build/setup-stub.exe -static -s %LIBS% -lcabinet -lwininet || goto :fail
+g++ %CXXFLAGS% -mwindows -Iapp setup/setup.cpp app/ui.cpp app/util.cpp app/lang.cpp build/obj/setup.res.o -o build/setup-stub.exe -static -s %LIBS% -lcabinet -lwininet -lversion || goto :fail
 
 echo [3/5] packer
 g++ %CXXFLAGS% tools/pack.cpp -o build/pack.exe -static -s -lcabinet || goto :fail

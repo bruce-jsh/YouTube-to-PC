@@ -14,6 +14,8 @@ Link kopieren, eine Schaltfläche drücken. Mehr nicht.
 
 1,3 MB · Windows 10/11 (64 Bit) · auf die Schaltfläche klicken, die Datei wird sofort geladen
 
+Von Windows oder dem Browser blockiert? [So kommen Sie daran vorbei](troubleshooting.de.md).
+
 <br>
 
 [한국어](README.ko.md) ·

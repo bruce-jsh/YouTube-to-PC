@@ -14,6 +14,8 @@ Copiez un lien, appuyez sur un bouton. C'est tout.
 
 1,3 Mo · Windows 10/11 (64 bits) · cliquez sur le bouton, le fichier se télécharge aussitôt
 
+Bloqué par Windows ou votre navigateur ? [Voici comment faire](troubleshooting.fr.md).
+
 <br>
 
 [한국어](README.ko.md) ·

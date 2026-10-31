@@ -14,6 +14,8 @@ Copy a link, press one button. That is all.
 
 1.3 MB · Windows 10/11 (64-bit) · click the button, the file downloads straight away
 
+Blocked by Windows or your browser? [Here is how to get past it](docs/troubleshooting.md).
+
 <br>
 
 [한국어](docs/README.ko.md) ·

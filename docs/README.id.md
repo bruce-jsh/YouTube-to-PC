@@ -14,6 +14,8 @@ Salin tautan, tekan satu tombol. Itu saja.
 
 1,3 MB · Windows 10/11 (64-bit) · tekan tombolnya, berkas langsung terunduh
 
+Diblokir Windows atau peramban? [Begini cara mengatasinya](troubleshooting.id.md).
+
 <br>
 
 [한국어](README.ko.md) ·

@@ -14,6 +14,8 @@
 
 1.3 MB · Windows 10/11 (64 ビット) · ボタンを押すとすぐに保存されます
 
+Windows やブラウザーにブロックされますか? [対処方法はこちら](troubleshooting.ja.md)。
+
 <br>
 
 [한국어](README.ko.md) ·

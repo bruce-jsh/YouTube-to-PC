@@ -14,6 +14,8 @@ Bir bağlantı kopyalayın, tek bir düğmeye basın. Hepsi bu.
 
 1,3 MB · Windows 10/11 (64 bit) · düğmeye basın, dosya hemen insin
 
+Windows ya da tarayıcınız engelliyor mu? [Nasıl aşılacağı burada](troubleshooting.tr.md).
+
 <br>
 
 [한국어](README.ko.md) ·

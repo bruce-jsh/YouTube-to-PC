@@ -5,6 +5,7 @@
 #include <compressapi.h>
 #include <urlmon.h>
 #include <wininet.h>
+#include <winver.h>
 #include <cstdint>
 #include <thread>
 #include <functional>
@@ -120,15 +121,36 @@ std::wstring DefaultInstallDir() {
     return PathJoin(base, APP_FOLDER);
 }
 
-// Version of an existing installation, empty when this is a fresh install.
-std::wstring InstalledVersion() {
-    for (HKEY root : {HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER}) {
-        std::wstring dir = RegString(root, L"InstallLocation");
-        if (dir.empty() || !FileExists(PathJoin(dir, APP_EXE))) continue;
-        std::wstring v = RegString(root, L"DisplayVersion");
-        return v.empty() ? L"?" : v;
-    }
-    return L"";
+// Version stamped into an executable, empty when it cannot be read.
+std::wstring FileVersionOf(const std::wstring& path) {
+    DWORD dummy = 0;
+    DWORD size = GetFileVersionInfoSizeW(path.c_str(), &dummy);
+    if (!size) return L"";
+    std::vector<BYTE> buf(size);
+    if (!GetFileVersionInfoW(path.c_str(), 0, size, buf.data())) return L"";
+    VS_FIXEDFILEINFO* fi = nullptr;
+    UINT len = 0;
+    if (!VerQueryValueW(buf.data(), L"\\", (void**)&fi, &len) || !fi) return L"";
+    return Fmt(L"%u.%u.%u", HIWORD(fi->dwProductVersionMS), LOWORD(fi->dwProductVersionMS),
+               HIWORD(fi->dwProductVersionLS));
+}
+
+// Version of whatever is already sitting in this exact folder, empty when the
+// folder holds no installation. Asking the folder rather than the registry
+// matters on a shared PC: another account may have installed the program
+// somewhere else, and that is not an upgrade of the folder being chosen here.
+std::wstring VersionAt(const std::wstring& dir) {
+    if (dir.empty()) return L"";
+    std::wstring exe = PathJoin(dir, APP_EXE);
+    if (!FileExists(exe)) return L"";
+    std::wstring v = FileVersionOf(exe);
+    if (!v.empty()) return v;
+    for (HKEY root : {HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER})
+        if (_wcsicmp(RegString(root, L"InstallLocation").c_str(), dir.c_str()) == 0) {
+            std::wstring rv = RegString(root, L"DisplayVersion");
+            if (!rv.empty()) return rv;
+        }
+    return L"?";
 }
 
 // Compares dotted version numbers: <0, 0 or >0.
@@ -598,6 +620,26 @@ void SetBusy(bool busy) {
     for (HWND h : {g.cbLang, g.edDir, g.btnBrowse, g.chkDesktop, g.btnOk, g.btnCancel}) EnableWindow(h, !busy);
 }
 
+// Keeps the note and the button honest about what pressing it will do, because
+// that depends on the folder in the box and the box can be edited.
+void RefreshTarget() {
+    if (!g.edDir || !g.btnOk || !g.lblSpace) return;
+    std::wstring dir = Trim(GetText(g.edDir));
+    while (!dir.empty() && (dir.back() == L'\\' || dir.back() == L'/')) dir.pop_back();
+    g.installedVer = VersionAt(dir);
+    std::wstring note;
+    if (!g.installedVer.empty()) {
+        note = Fmt(T(S_SU_UPGRADE_NOTE), g.installedVer.c_str(), APP_VERSION);
+    } else {
+        note = T(S_SU_NEEDS_NET);
+        if (!IsProcessElevated()) note += T(S_SU_ADMIN_NOTE);
+    }
+    SetWindowTextW(g.lblSpace, note.c_str());
+    SetWindowTextW(g.btnOk, T(g.installedVer.empty() ? S_SU_INSTALL : S_SU_UPGRADE));
+    InvalidateRect(g.lblSpace, nullptr, TRUE);
+    InvalidateRect(g.btnOk, nullptr, TRUE);
+}
+
 void InvalidateProgress() {
     RECT r{0, S(268), S(DW), S(FOOT)};
     InvalidateRect(g.dlg, &r, TRUE);
@@ -672,24 +714,17 @@ INT_PTR CALLBACK SetupProc(HWND dlg, UINT msg, WPARAM wp, LPARAM lp) {
         g.edDir = Ctl(dlg, L"EDIT", startDir.c_str(), ES_AUTOHSCROLL | WS_TABSTOP, 24, 144, CW - 104, 28, IDC_DIR,
                       nullptr, WS_EX_CLIENTEDGE);
         g.btnBrowse = MakeButton(dlg, IDC_BROWSE, T(S_SET_BROWSE), 0, BTN_SECONDARY, false, DW - 24 - 96, 143, 96, 30);
-        g.installedVer = InstalledVersion();
-        std::wstring need;
-        if (!g.installedVer.empty()) {
-            need = Fmt(T(S_SU_UPGRADE_NOTE), g.installedVer.c_str(), APP_VERSION);
-        } else {
-            need = T(S_SU_NEEDS_NET);
-            if (!IsProcessElevated()) need += T(S_SU_ADMIN_NOTE);
-        }
-        g.lblSpace = Ctl(dlg, L"STATIC", need.c_str(), SS_LEFT | SS_NOPREFIX, 24, 180, CW, 36, -1, g_fontSmall);
+        g.lblSpace = Ctl(dlg, L"STATIC", L"", SS_LEFT | SS_NOPREFIX, 24, 180, CW, 36, -1, g_fontSmall);
         SetPropW(g.lblSpace, L"note", (HANDLE)1);
         g.chkDesktop = Ctl(dlg, L"BUTTON", T(S_SU_DESKTOP), BS_AUTOCHECKBOX | WS_TABSTOP, 24, 212, CW, 24, IDC_DESKTOP);
         Button_SetCheck(g.chkDesktop, g.desktop ? BST_CHECKED : BST_UNCHECKED);
         g.chkLaunch = Ctl(dlg, L"BUTTON", T(S_SU_LAUNCH), BS_AUTOCHECKBOX | WS_TABSTOP, 24, 240, CW, 24, IDC_LAUNCH);
         Button_SetCheck(g.chkLaunch, g.launch ? BST_CHECKED : BST_UNCHECKED);
         g.status = Ctl(dlg, L"STATIC", L"", SS_LEFT | SS_NOPREFIX, 24, 282, CW, 20, -1);
-        g.btnOk = MakeButton(dlg, IDOK, T(g.installedVer.empty() ? S_SU_INSTALL : S_SU_UPGRADE), 0, BTN_PRIMARY, true,
-                             DW - 24 - 100 - 10 - 130, FOOT + 14, 130, 36);
+        g.btnOk = MakeButton(dlg, IDOK, T(S_SU_INSTALL), 0, BTN_PRIMARY, true, DW - 24 - 100 - 10 - 130, FOOT + 14, 130,
+                             36);
         g.btnCancel = MakeButton(dlg, IDCANCEL, T(S_BTN_CANCEL), 0, BTN_SECONDARY, true, DW - 24 - 100, FOOT + 14, 100, 36);
+        RefreshTarget();
         DlgPlace(dlg, DW, DH);
         g.icon = (HICON)LoadImageW(g_inst, MAKEINTRESOURCEW(IDI_APP), IMAGE_ICON, S(52), S(52), LR_DEFAULTCOLOR);
         SetFocus(g.btnOk);
@@ -775,12 +810,15 @@ INT_PTR CALLBACK SetupProc(HWND dlg, UINT msg, WPARAM wp, LPARAM lp) {
                 }
             }
             return TRUE;
+        case IDC_DIR:
+            if (HIWORD(wp) == EN_CHANGE && !g.installing) RefreshTarget();
+            return TRUE;
         case IDC_BROWSE: {
             std::wstring p = Trim(GetText(g.edDir));
             std::wstring start = DirExists(p) ? p : PathDir(p);
             if (PickFolder(dlg, start, T(S_SU_PICK_FOLDER))) {
                 if (_wcsicmp(PathName(start).c_str(), APP_FOLDER) != 0) start = PathJoin(start, APP_FOLDER);
-                SetWindowTextW(g.edDir, start.c_str());
+                SetWindowTextW(g.edDir, start.c_str());  // EN_CHANGE refreshes the note
             }
             return TRUE;
         }

@@ -14,6 +14,8 @@ Sao chép liên kết, nhấn một nút. Chỉ vậy thôi.
 
 1,3 MB · Windows 10/11 (64-bit) · nhấn nút là tệp tải về ngay
 
+Bị Windows hoặc trình duyệt chặn? [Cách xử lý ở đây](troubleshooting.vi.md).
+
 <br>
 
 [한국어](README.ko.md) ·

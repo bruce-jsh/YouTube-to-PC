@@ -14,6 +14,8 @@
 
 1.3 MB · Windows 10/11（64 位）· 点击按钮即可直接下载
 
+被 Windows 或浏览器拦住了？[这里有解决办法](troubleshooting.zh-Hans.md)。
+
 <br>
 
 [한국어](README.ko.md) ·

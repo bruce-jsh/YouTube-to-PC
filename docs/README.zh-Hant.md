@@ -14,6 +14,8 @@
 
 1.3 MB · Windows 10/11（64 位元）· 點選按鈕即可直接下載
 
+被 Windows 或瀏覽器攔住了？[這裡有解決辦法](troubleshooting.zh-Hant.md)。
+
 <br>
 
 [한국어](README.ko.md) ·
