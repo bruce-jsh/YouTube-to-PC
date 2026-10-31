@@ -10,7 +10,7 @@
 
 <br>
 
-### [⬇️ YouTubeToPC-Setup-1.3.0.exe 내려받기](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.0/YouTubeToPC-Setup-1.3.0.exe)
+### [⬇️ YouTubeToPC-Setup-1.3.1.exe 내려받기](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.1/YouTubeToPC-Setup-1.3.1.exe)
 
 1.3 MB · Windows 10/11 (64비트) · 버튼을 누르면 바로 내려받습니다
 

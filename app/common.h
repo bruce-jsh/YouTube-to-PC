@@ -34,7 +34,7 @@
 #include <functional>
 
 #define APP_NAME     L"YouTube to PC"
-#define APP_VERSION  L"1.3.0"
+#define APP_VERSION  L"1.3.1"
 #define APP_DIRNAME  L"YouTubeToPC"
 #define APP_FOLDER   L"YouTube to PC"
 #define MAIN_CLASS   L"YouTubeToPC.Main"

@@ -133,7 +133,7 @@ Her sürüm sayfasında kurulum dosyasının SHA-256 değeri yazar. Dosyanın bu
 klasörde PowerShell açıp şunu çalıştırın:
 
 ```powershell
-Get-FileHash .\YouTubeToPC-Setup-1.3.0.exe -Algorithm SHA256
+Get-FileHash .\YouTubeToPC-Setup-1.3.1.exe -Algorithm SHA256
 ```
 
 Değer

@@ -120,7 +120,7 @@ QuickJS，合计约 110 MB，并在程序文件夹内保留自己的副本。
 每个发布页面都会列出安装程序的 SHA-256。在文件所在的文件夹打开 PowerShell，运行：
 
 ```powershell
-Get-FileHash .\YouTubeToPC-Setup-1.3.0.exe -Algorithm SHA256
+Get-FileHash .\YouTubeToPC-Setup-1.3.1.exe -Algorithm SHA256
 ```
 
 如果和[发布页面](https://github.com/bruce-jsh/YouTube-to-PC/releases/latest)上的

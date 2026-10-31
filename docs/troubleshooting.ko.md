@@ -134,7 +134,7 @@ GitHub를 막습니다. 집 인터넷이나 휴대폰 핫스팟이면 대개 됩
 PowerShell을 열고 아래를 실행하세요.
 
 ```powershell
-Get-FileHash .\YouTubeToPC-Setup-1.3.0.exe -Algorithm SHA256
+Get-FileHash .\YouTubeToPC-Setup-1.3.1.exe -Algorithm SHA256
 ```
 
 [릴리스 페이지](https://github.com/bruce-jsh/YouTube-to-PC/releases/latest)의

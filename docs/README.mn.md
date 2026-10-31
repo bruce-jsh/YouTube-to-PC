@@ -10,7 +10,7 @@
 
 <br>
 
-### [⬇️ YouTubeToPC-Setup-1.3.0.exe татах](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.0/YouTubeToPC-Setup-1.3.0.exe)
+### [⬇️ YouTubeToPC-Setup-1.3.1.exe татах](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.1/YouTubeToPC-Setup-1.3.1.exe)
 
 1.3 МБ · Windows 10/11 (64 бит) · товчийг дарахад шууд татагдана
 

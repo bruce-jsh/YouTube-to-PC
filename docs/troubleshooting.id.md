@@ -135,7 +135,7 @@ Setiap halaman rilis mencantumkan SHA-256 pemasangnya. Buka PowerShell di folder
 tempat berkas berada lalu jalankan:
 
 ```powershell
-Get-FileHash .\YouTubeToPC-Setup-1.3.0.exe -Algorithm SHA256
+Get-FileHash .\YouTubeToPC-Setup-1.3.1.exe -Algorithm SHA256
 ```
 
 Kalau cocok dengan nilai di

@@ -133,7 +133,7 @@ Mỗi trang phát hành đều ghi SHA-256 của trình cài đặt. Mở PowerS
 chứa tệp và chạy:
 
 ```powershell
-Get-FileHash .\YouTubeToPC-Setup-1.3.0.exe -Algorithm SHA256
+Get-FileHash .\YouTubeToPC-Setup-1.3.1.exe -Algorithm SHA256
 ```
 
 Nếu khớp với giá trị trên

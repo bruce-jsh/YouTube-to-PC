@@ -10,7 +10,7 @@
 
 <br>
 
-### [⬇️ YouTubeToPC-Setup-1.3.0.exe をダウンロード](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.0/YouTubeToPC-Setup-1.3.0.exe)
+### [⬇️ YouTubeToPC-Setup-1.3.1.exe をダウンロード](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.1/YouTubeToPC-Setup-1.3.1.exe)
 
 1.3 MB · Windows 10/11 (64 ビット) · ボタンを押すとすぐに保存されます
 
