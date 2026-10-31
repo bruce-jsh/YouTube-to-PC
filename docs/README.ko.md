@@ -151,6 +151,27 @@ Visual Studio나 .NET SDK는 필요 없습니다.
 
 ---
 
+## 라이선스
+
+[MIT](../LICENSE). 소스 코드를 읽고 고치고 다시 쓰셔도 됩니다.
+
+---
+
+## 코드 서명 정책 (Code signing policy)
+
+Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org).
+
+| 역할 | 담당 |
+|---|---|
+| 커밋 · 검토 | [Bruce Jung](https://github.com/bruce-jsh) |
+| 서명 승인 | [Bruce Jung](https://github.com/bruce-jsh) |
+
+**개인정보 처리방침.** 이 프로그램은 사용자가 직접 요청하지 않는 한 어떤 정보도 외부로 보내지 않습니다.
+
+요청하신 영상을 받기 위해 YouTube에, 목록 썸네일을 위해 i.ytimg.com에, yt-dlp와 이 프로그램의 새 버전을 확인하기 위해 GitHub에 접속합니다. 버전 확인은 설정에서 끌 수 있습니다. 계정도 로그인도 없고 사용 기록을 수집하지 않습니다.
+
+---
+
 <div align="center">
 
 며칠 전에 회사를 그만뒀습니다. 집에서 뒹굴다 심심해서 이걸 만들었습니다.<br>

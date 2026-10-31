@@ -152,6 +152,27 @@ Visual Studio も .NET SDK も不要です。
 
 ---
 
+## ライセンス
+
+[MIT](../LICENSE)。ソースコードは自由に読み、変更し、再利用できます。
+
+---
+
+## コード署名ポリシー (Code signing policy)
+
+Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org).
+
+| 役割 | 担当 |
+|---|---|
+| コミットとレビュー | [Bruce Jung](https://github.com/bruce-jsh) |
+| 署名の承認 | [Bruce Jung](https://github.com/bruce-jsh) |
+
+**プライバシー ポリシー。** このプログラムは、利用者または導入した人が明示的に求めない限り、いかなる情報も外部のシステムへ送信しません。
+
+指定された動画を取得するために YouTube へ、一覧のサムネイルのために i.ytimg.com へ、yt-dlp と本プログラムの新しいバージョンを確認するために GitHub へ接続します。バージョン確認は設定で無効にできます。アカウントもログインもなく、利用状況の記録も行いません。
+
+---
+
 <div align="center">
 
 数日前に会社を辞めました。家で暇を持て余して、これを作りました。<br>

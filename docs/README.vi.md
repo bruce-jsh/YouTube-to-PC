@@ -154,6 +154,27 @@ hoặc nội dung không còn bản quyền. Bạn tự chịu trách nhiệm kh
 
 ---
 
+## Giấy phép
+
+[MIT](../LICENSE). Mã nguồn có thể đọc, sửa và dùng lại tự do.
+
+---
+
+## Chính sách ký mã (Code signing policy)
+
+Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org).
+
+| Vai trò | Ai |
+|---|---|
+| Commit và duyệt mã | [Bruce Jung](https://github.com/bruce-jsh) |
+| Phê duyệt chữ ký | [Bruce Jung](https://github.com/bruce-jsh) |
+
+**Chính sách riêng tư.** Chương trình không gửi bất kỳ thông tin nào tới hệ thống mạng khác trừ khi người dùng hoặc người cài đặt yêu cầu rõ ràng.
+
+Nó kết nối YouTube để lấy video bạn yêu cầu, i.ytimg.com để lấy ảnh thu nhỏ trong danh sách, và GitHub để tìm bản mới của yt-dlp và của chương trình này. Có thể tắt phần kiểm tra bản mới trong phần cài đặt. Không tài khoản, không đăng nhập, không theo dõi.
+
+---
+
 <div align="center">
 
 Vài ngày trước tôi nghỉ việc. Ở nhà buồn chán nên làm ra thứ này.<br>

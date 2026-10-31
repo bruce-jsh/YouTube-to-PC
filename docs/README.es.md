@@ -153,6 +153,27 @@ El uso que hagas de ella es tu responsabilidad.
 
 ---
 
+## Licencia
+
+[MIT](../LICENSE). El código es tuyo para leerlo, cambiarlo y reutilizarlo.
+
+---
+
+## Política de firma de código (Code signing policy)
+
+Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org).
+
+| Función | Quién |
+|---|---|
+| Commits y revisión | [Bruce Jung](https://github.com/bruce-jsh) |
+| Aprobación de firmas | [Bruce Jung](https://github.com/bruce-jsh) |
+
+**Política de privacidad.** Este programa no transfiere información alguna a otros sistemas en red salvo que lo pida expresamente quien lo usa o lo instala.
+
+Se conecta a YouTube para los vídeos que pides, a i.ytimg.com para las miniaturas de la lista y a GitHub para buscar versiones nuevas de yt-dlp y de este programa. Esas comprobaciones pueden desactivarse en la configuración. No hay cuenta, ni inicio de sesión, ni seguimiento de uso.
+
+---
+
 <div align="center">
 
 Hace unos días dejé mi trabajo. Aburrido en casa, hice esto.<br>

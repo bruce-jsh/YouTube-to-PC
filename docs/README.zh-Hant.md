@@ -150,6 +150,27 @@ build.bat
 
 ---
 
+## 授權
+
+[MIT](../LICENSE)。原始碼可自由閱讀、修改與再利用。
+
+---
+
+## 程式碼簽署政策 (Code signing policy)
+
+Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org).
+
+| 角色 | 負責人 |
+|---|---|
+| 提交與審查 | [Bruce Jung](https://github.com/bruce-jsh) |
+| 簽署核准 | [Bruce Jung](https://github.com/bruce-jsh) |
+
+**隱私權政策。** 除非使用者或安裝者明確要求，本程式不會向任何外部系統傳送資訊。
+
+它會連線 YouTube 以取得你要的影片，連線 i.ytimg.com 以顯示清單縮圖，連線 GitHub 以檢查 yt-dlp 與本程式的新版本。版本檢查可在設定中關閉。沒有帳號、無須登入，也不記錄使用情形。
+
+---
+
 <div align="center">
 
 幾天前我辭職了。在家閒得發慌，就寫了這個。<br>

@@ -7,7 +7,8 @@ cd /d "%~dp0"
 
 rem ---- configuration -------------------------------------------------------
 set "VERSION=1.3.0"
-set "MSYS_BIN=C:\msys64\ucrt64\bin"
+rem Set MSYS_BIN beforehand to build elsewhere, which is what CI does.
+if not defined MSYS_BIN set "MSYS_BIN=C:\msys64\ucrt64\bin"
 rem --------------------------------------------------------------------------
 
 if not exist "%MSYS_BIN%\g++.exe" (
@@ -43,15 +44,25 @@ mkdir build\payload\licenses
 copy /y build\YouTubeToPC.exe build\payload\ >nul || goto :fail
 copy /y licenses\THIRD-PARTY-NOTICES.txt build\payload\licenses\ >nul || goto :fail
 
-echo [5/5] installer
+echo [5/6] installer
 build\pack.exe build\setup-stub.exe build\payload "dist\YouTubeToPC-Setup-%VERSION%.exe" || goto :fail
+
+rem Browsers refuse downloads of unsigned programs they have not seen before,
+rem so the release carries the same installer inside a zip as a way through.
+echo [6/6] zipped copy
+if exist "dist\YouTubeToPC-Setup-%VERSION%.zip" del /q "dist\YouTubeToPC-Setup-%VERSION%.zip"
+tar.exe -a -c -f "dist\YouTubeToPC-Setup-%VERSION%.zip" -C dist "YouTubeToPC-Setup-%VERSION%.exe" || goto :fail
+
+for /f "skip=1 delims=" %%h in ('certutil -hashfile "dist\YouTubeToPC-Setup-%VERSION%.exe" SHA256') do if not defined SHA256 set "SHA256=%%h"
 
 echo.
 echo Done.
 echo   Installer : dist\YouTubeToPC-Setup-%VERSION%.exe
+echo   Zipped    : dist\YouTubeToPC-Setup-%VERSION%.zip
+echo   SHA-256   : %SHA256%
 echo.
 echo Publish it with:
-echo   gh release create v%VERSION% "dist\YouTubeToPC-Setup-%VERSION%.exe" --title "YouTube to PC %VERSION%"
+echo   gh release create v%VERSION% "dist\YouTubeToPC-Setup-%VERSION%.exe" "dist\YouTubeToPC-Setup-%VERSION%.zip" --title "YouTube to PC %VERSION%"
 exit /b 0
 
 :fail

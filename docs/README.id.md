@@ -155,6 +155,27 @@ atau konten bebas hak cipta. Tanggung jawab penggunaan ada pada Anda.
 
 ---
 
+## Lisensi
+
+[MIT](../LICENSE). Kode sumber bebas dibaca, diubah, dan dipakai ulang.
+
+---
+
+## Kebijakan penandatanganan kode (Code signing policy)
+
+Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org).
+
+| Peran | Siapa |
+|---|---|
+| Commit dan tinjauan | [Bruce Jung](https://github.com/bruce-jsh) |
+| Persetujuan tanda tangan | [Bruce Jung](https://github.com/bruce-jsh) |
+
+**Kebijakan privasi.** Program ini tidak mengirim informasi apa pun ke sistem jaringan lain kecuali diminta langsung oleh pengguna atau orang yang memasangnya.
+
+Program menghubungi YouTube untuk video yang Anda minta, i.ytimg.com untuk gambar kecil di daftar, dan GitHub untuk mencari versi baru yt-dlp serta program ini. Pemeriksaan versi bisa dimatikan di pengaturan. Tanpa akun, tanpa masuk, tanpa pelacakan penggunaan.
+
+---
+
 <div align="center">
 
 Beberapa hari lalu saya berhenti kerja. Bosan di rumah, jadilah aplikasi ini.<br>

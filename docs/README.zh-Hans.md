@@ -150,6 +150,27 @@ build.bat
 
 ---
 
+## 许可证
+
+[MIT](../LICENSE)。源代码可自由阅读、修改和再利用。
+
+---
+
+## 代码签名政策 (Code signing policy)
+
+Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org).
+
+| 角色 | 负责人 |
+|---|---|
+| 提交与审查 | [Bruce Jung](https://github.com/bruce-jsh) |
+| 签名批准 | [Bruce Jung](https://github.com/bruce-jsh) |
+
+**隐私政策。** 除非用户或安装者明确要求，本程序不会向任何外部系统发送信息。
+
+它会连接 YouTube 以获取你要的视频，连接 i.ytimg.com 以显示列表缩略图，连接 GitHub 以检查 yt-dlp 和本程序的新版本。版本检查可在设置中关闭。没有账号、无需登录，也不记录使用情况。
+
+---
+
 <div align="center">
 
 几天前我辞职了。在家闲得发慌，就写了这个。<br>

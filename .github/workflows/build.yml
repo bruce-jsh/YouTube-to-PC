@@ -1,0 +1,60 @@
+name: build
+
+# SignPath Foundation signs only binaries it can trace back to this repository,
+# so releases have to be built here rather than on a developer's machine.
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up MSYS2 UCRT64
+        id: msys2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: false
+          install: mingw-w64-ucrt-x86_64-gcc
+
+      - name: Build
+        shell: cmd
+        env:
+          MSYS_BIN: ${{ steps.msys2.outputs.msys2-location }}\ucrt64\bin
+        run: build.bat
+
+      - name: Read the version
+        id: ver
+        shell: bash
+        run: echo "version=$(grep -oP '(?<=^set "VERSION=)[^"]+' build.bat)" >> "$GITHUB_OUTPUT"
+
+      - name: Check the installer carries the version it should
+        shell: pwsh
+        run: |
+          $exe = "dist\YouTubeToPC-Setup-${{ steps.ver.outputs.version }}.exe"
+          if (-not (Test-Path $exe)) { throw "missing $exe" }
+          $info = (Get-Item $exe).VersionInfo
+          if ($info.ProductName -ne "YouTube to PC") { throw "ProductName is '$($info.ProductName)'" }
+          if ($info.ProductVersion -ne "${{ steps.ver.outputs.version }}") { throw "ProductVersion is '$($info.ProductVersion)'" }
+          "{0}  {1:N0} bytes" -f $exe, (Get-Item $exe).Length
+          "SHA-256  " + (Get-FileHash $exe -Algorithm SHA256).Hash
+
+      - name: Upload the build
+        uses: actions/upload-artifact@v4
+        with:
+          name: YouTubeToPC-Setup-${{ steps.ver.outputs.version }}
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 30

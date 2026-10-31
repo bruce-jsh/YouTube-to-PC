@@ -155,6 +155,27 @@ Nasıl kullandığınız sizin sorumluluğunuzdadır.
 
 ---
 
+## Lisans
+
+[MIT](../LICENSE). Kaynak kod okunabilir, değiştirilebilir ve yeniden kullanılabilir.
+
+---
+
+## Kod imzalama politikası (Code signing policy)
+
+Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org).
+
+| Rol | Kim |
+|---|---|
+| Geliştirme ve inceleme | [Bruce Jung](https://github.com/bruce-jsh) |
+| İmza onayı | [Bruce Jung](https://github.com/bruce-jsh) |
+
+**Gizlilik politikası.** Bu program, kullanıcı ya da kurulumu yapan kişi özellikle istemedikçe hiçbir bilgiyi başka sistemlere göndermez.
+
+İstediğiniz videolar için YouTube'a, listedeki küçük resimler için i.ytimg.com'a, yt-dlp ve bu programın yeni sürümleri için GitHub'a bağlanır. Sürüm denetimleri ayarlardan kapatılabilir. Hesap, oturum açma ve kullanım takibi yoktur.
+
+---
+
 <div align="center">
 
 Birkaç gün önce işimden ayrıldım. Evde canım sıkıldı, bunun yerine bunu yaptım.<br>

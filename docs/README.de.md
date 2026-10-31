@@ -154,6 +154,27 @@ gemeinfreie Inhalte gedacht. Die Verantwortung für die Nutzung liegt bei Ihnen.
 
 ---
 
+## Lizenz
+
+[MIT](../LICENSE). Der Quelltext darf gelesen, geändert und weiterverwendet werden.
+
+---
+
+## Richtlinie zur Codesignatur (Code signing policy)
+
+Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org).
+
+| Rolle | Wer |
+|---|---|
+| Commits und Review | [Bruce Jung](https://github.com/bruce-jsh) |
+| Freigabe der Signatur | [Bruce Jung](https://github.com/bruce-jsh) |
+
+**Datenschutzerklärung.** Dieses Programm überträgt keine Informationen an andere vernetzte Systeme, sofern dies nicht ausdrücklich von der nutzenden oder installierenden Person verlangt wird.
+
+Es verbindet sich mit YouTube für die gewünschten Videos, mit i.ytimg.com für die Vorschaubilder in der Liste und mit GitHub, um nach neuen Versionen von yt-dlp und dieses Programms zu sehen. Diese Prüfungen lassen sich in den Einstellungen abschalten. Kein Konto, keine Anmeldung, keine Nutzungserfassung.
+
+---
+
 <div align="center">
 
 Vor ein paar Tagen habe ich gekündigt. Aus Langeweile zu Hause ist das hier entstanden.<br>

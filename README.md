@@ -153,6 +153,27 @@ How you use it is your responsibility.
 
 ---
 
+## Licence
+
+[MIT](LICENSE). The source code is yours to read, change and reuse.
+
+---
+
+## Code signing policy
+
+Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org).
+
+| Role | Who |
+|---|---|
+| Committers and reviewers | [Bruce Jung](https://github.com/bruce-jsh) |
+| Approvers | [Bruce Jung](https://github.com/bruce-jsh) |
+
+**Privacy policy.** This program will not transfer any information to other networked systems unless specifically requested by the user or the person installing or operating it.
+
+It contacts YouTube for the videos you ask for, i.ytimg.com for the thumbnails in the list, and GitHub to look for newer versions of yt-dlp and of this program. Those checks can be switched off in Settings. There is no account, no sign-in and no usage tracking.
+
+---
+
 <div align="center">
 
 I quit my job a few days ago. Bored at home, I built this instead.<br>
