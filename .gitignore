@@ -7,8 +7,7 @@
 
 # raw test captures: they show real desktops, so only the cropped ones in
 # docs/images are published
-/eng_captures/
-/일반계정테스트/
+/archives/
 
 # editor / OS noise
 .vs/

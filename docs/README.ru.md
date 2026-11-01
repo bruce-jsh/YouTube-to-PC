@@ -16,6 +16,19 @@
 
 Windows или браузер блокируют? [Вот как это обойти](troubleshooting.ru.md).
 
+
+<img src="images/app-main.png" width="620" alt="YouTube to PC">
+
+*Вставьте ссылку, и загрузка начнется.*
+
+<img src="images/app-menu.png" width="620" alt="">
+
+*Убрать из списка и удалить файл это разные команды.*
+
+<img src="images/app-languages.png" width="620" alt="">
+
+*Пятнадцать языков, выбор в настройках.*
+
 <br>
 
 [한국어](README.ko.md) ·

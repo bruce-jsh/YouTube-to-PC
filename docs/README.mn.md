@@ -16,6 +16,19 @@
 
 Windows эсвэл хөтөч хориглож байна уу? [Шийдвэрлэх арга энд байна](troubleshooting.mn.md).
 
+
+<img src="images/app-main.png" width="620" alt="YouTube to PC">
+
+*Холбоосыг буулгахад татаж эхэлнэ.*
+
+<img src="images/app-menu.png" width="620" alt="">
+
+*Жагсаалтаас хасах, файлыг устгах хоёр тусдаа сонголт.*
+
+<img src="images/app-languages.png" width="620" alt="">
+
+*Арван таван хэл, тохиргооноос сонгоно.*
+
 <br>
 
 [한국어](README.ko.md) ·

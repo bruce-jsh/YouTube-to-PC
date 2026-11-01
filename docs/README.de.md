@@ -16,6 +16,19 @@ Link kopieren, eine Schaltfläche drücken. Mehr nicht.
 
 Von Windows oder dem Browser blockiert? [So kommen Sie daran vorbei](troubleshooting.de.md).
 
+
+<img src="images/app-main.png" width="620" alt="YouTube to PC">
+
+*Link einfügen, der Download startet.*
+
+<img src="images/app-menu.png" width="620" alt="">
+
+*Aus der Liste entfernen und die Datei löschen sind getrennte Befehle.*
+
+<img src="images/app-languages.png" width="620" alt="">
+
+*Fünfzehn Sprachen, in den Einstellungen wählbar.*
+
 <br>
 
 [한국어](README.ko.md) ·

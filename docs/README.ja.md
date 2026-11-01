@@ -16,6 +16,19 @@
 
 Windows やブラウザーにブロックされますか? [対処方法はこちら](troubleshooting.ja.md)。
 
+
+<img src="images/app-main.png" width="620" alt="YouTube to PC">
+
+*リンクを貼り付ければ取得が始まります。*
+
+<img src="images/app-menu.png" width="620" alt="">
+
+*リストから消すのとファイルごと消すのは別の操作です。*
+
+<img src="images/app-languages.png" width="620" alt="">
+
+*15 の言語を設定から選べます。*
+
 <br>
 
 [한국어](README.ko.md) ·

@@ -16,6 +16,19 @@ Copy a link, press one button. That is all.
 
 Blocked by Windows or your browser? [Here is how to get past it](docs/troubleshooting.md).
 
+
+<img src="docs/images/app-main.png" width="620" alt="YouTube to PC">
+
+*Paste a link and the download starts.*
+
+<img src="docs/images/app-menu.png" width="620" alt="">
+
+*Deleting from the list and deleting the file are separate choices.*
+
+<img src="docs/images/app-languages.png" width="620" alt="">
+
+*Fifteen languages, chosen in Settings.*
+
 <br>
 
 [한국어](docs/README.ko.md) ·

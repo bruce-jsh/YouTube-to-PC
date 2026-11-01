@@ -16,6 +16,19 @@ Sao chép liên kết, nhấn một nút. Chỉ vậy thôi.
 
 Bị Windows hoặc trình duyệt chặn? [Cách xử lý ở đây](troubleshooting.vi.md).
 
+
+<img src="images/app-main.png" width="620" alt="YouTube to PC">
+
+*Dán liên kết là bắt đầu tải.*
+
+<img src="images/app-menu.png" width="620" alt="">
+
+*Xóa khỏi danh sách và xóa cả tệp là hai lựa chọn riêng.*
+
+<img src="images/app-languages.png" width="620" alt="">
+
+*Mười lăm ngôn ngữ, chọn trong phần cài đặt.*
+
 <br>
 
 [한국어](README.ko.md) ·

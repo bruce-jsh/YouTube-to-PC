@@ -16,6 +16,19 @@ Salin tautan, tekan satu tombol. Itu saja.
 
 Diblokir Windows atau peramban? [Begini cara mengatasinya](troubleshooting.id.md).
 
+
+<img src="images/app-main.png" width="620" alt="YouTube to PC">
+
+*Tempel tautan dan unduhan dimulai.*
+
+<img src="images/app-menu.png" width="620" alt="">
+
+*Menghapus dari daftar dan menghapus berkas adalah dua pilihan berbeda.*
+
+<img src="images/app-languages.png" width="620" alt="">
+
+*Lima belas bahasa, dipilih di pengaturan.*
+
 <br>
 
 [한국어](README.ko.md) ·

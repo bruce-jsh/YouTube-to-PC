@@ -16,6 +16,18 @@
 
 Windows나 브라우저가 막나요? [해결 방법을 정리해 두었습니다](troubleshooting.ko.md).
 
+<img src="images/app-main-ko.png" width="620" alt="YouTube to PC">
+
+*링크를 붙여넣으면 바로 받기 시작합니다.*
+
+<img src="images/app-menu-ko.png" width="620" alt="">
+
+*목록에서만 지우기와 파일까지 지우기를 따로 고릅니다.*
+
+<img src="images/app-languages.png" width="620" alt="">
+
+*15개 언어, 설정에서 고릅니다.*
+
 <br>
 
 **한국어** ·

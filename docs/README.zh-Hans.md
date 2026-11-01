@@ -16,6 +16,19 @@
 
 被 Windows 或浏览器拦住了？[这里有解决办法](troubleshooting.zh-Hans.md)。
 
+
+<img src="images/app-main.png" width="620" alt="YouTube to PC">
+
+*粘贴链接即可开始下载。*
+
+<img src="images/app-menu.png" width="620" alt="">
+
+*从列表移除和连同文件删除是两个独立选项。*
+
+<img src="images/app-languages.png" width="620" alt="">
+
+*15 种语言，可在设置中选择。*
+
 <br>
 
 [한국어](README.ko.md) ·

@@ -16,6 +16,19 @@ Bir bağlantı kopyalayın, tek bir düğmeye basın. Hepsi bu.
 
 Windows ya da tarayıcınız engelliyor mu? [Nasıl aşılacağı burada](troubleshooting.tr.md).
 
+
+<img src="images/app-main.png" width="620" alt="YouTube to PC">
+
+*Bağlantıyı yapıştırın, indirme başlasın.*
+
+<img src="images/app-menu.png" width="620" alt="">
+
+*Listeden kaldırmak ile dosyayı silmek ayrı seçeneklerdir.*
+
+<img src="images/app-languages.png" width="620" alt="">
+
+*On beş dil, ayarlardan seçilir.*
+
 <br>
 
 [한국어](README.ko.md) ·

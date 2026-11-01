@@ -16,6 +16,19 @@ Copia un enlace y pulsa un botón. Eso es todo.
 
 ¿Windows o tu navegador lo bloquean? [Aquí tienes la solución](troubleshooting.es.md).
 
+
+<img src="images/app-main.png" width="620" alt="YouTube to PC">
+
+*Pega un enlace y la descarga empieza.*
+
+<img src="images/app-menu.png" width="620" alt="">
+
+*Quitar de la lista y borrar el archivo son opciones distintas.*
+
+<img src="images/app-languages.png" width="620" alt="">
+
+*Quince idiomas, elegidos en la configuración.*
+
 <br>
 
 [한국어](README.ko.md) ·

@@ -16,6 +16,19 @@ Copiez un lien, appuyez sur un bouton. C'est tout.
 
 Bloqué par Windows ou votre navigateur ? [Voici comment faire](troubleshooting.fr.md).
 
+
+<img src="images/app-main.png" width="620" alt="YouTube to PC">
+
+*Collez un lien et le téléchargement démarre.*
+
+<img src="images/app-menu.png" width="620" alt="">
+
+*Retirer de la liste et supprimer le fichier sont deux choix distincts.*
+
+<img src="images/app-languages.png" width="620" alt="">
+
+*Quinze langues, au choix dans les paramètres.*
+
 <br>
 
 [한국어](README.ko.md) ·
