@@ -291,8 +291,10 @@ void ShowInFolder(const std::wstring& path) {
         }
     }
     if (FileExists(path) && OpenViaExplorer(L"/select," + QuoteArg(path))) return;
+    // Explorer falls back to Documents when handed a path it cannot resolve, so
+    // only ask it to open a folder that is really there.
     std::wstring dir = DirExists(path) ? path : PathDir(path);
-    if (!dir.empty()) OpenViaExplorer(QuoteArg(dir));
+    if (DirExists(dir)) OpenViaExplorer(QuoteArg(dir));
 }
 
 bool SetClipboardText(HWND owner, const std::wstring& text) {

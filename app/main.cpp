@@ -143,6 +143,7 @@ void UpdateStatus();
 void StartQueued();
 void AddLink(const std::wstring& raw, int mode, int forceKind);
 void Layout();
+void RevealItem(Item* it);
 
 // ====================================================================== items
 
@@ -808,7 +809,7 @@ LRESULT CALLBACK ListProc(HWND h, UINT m, WPARAM w, LPARAM l, UINT_PTR, DWORD_PT
             int row = g_hover;
             Item* it = FindItem(g_view[row]);
             if (btn == 1 && it) {
-                ShowInFolder(it->file);
+                RevealItem(it);
             } else {
                 std::vector<int> sel = SelectedIds();
                 if (std::find(sel.begin(), sel.end(), g_view[row]) == sel.end()) SelectOnlyRow(row);
@@ -1357,6 +1358,21 @@ void DeleteItems(const std::vector<int>& ids, bool all, bool withFiles) {
 }
 
 void DeleteAllItems(bool withFiles) { DeleteItems(AllIds(), true, withFiles); }
+
+// Shows a download in Explorer. The file may be gone, moved, or on a folder the
+// user has since deleted, so fall back step by step instead of handing Explorer
+// a path it cannot resolve, which makes it open Documents instead.
+void RevealItem(Item* it) {
+    if (!it) return;
+    if (FileExists(it->file)) {
+        ShowInFolder(it->file);
+        return;
+    }
+    std::wstring dir = PathDir(it->file);
+    if (!DirExists(dir)) dir = it->opt.dir;
+    if (DirExists(dir)) ShellOpen(dir);
+    else MessageBoxW(GetLastActivePopup(g_hwnd), T(S_MSG_FILE_MISSING), APP_NAME, MB_ICONINFORMATION);
+}
 
 void OpenSelected() {
     auto ids = SelectedIds();
@@ -1932,10 +1948,7 @@ void OnMenuCommand(int id) {
     case IDM_APP_UPDATE: CheckAppUpdate(); break;
     case IDM_PLAY: OpenSelected(); break;
     case IDM_SHOW_FOLDER:
-        if (first) {
-            if (FileExists(first->file)) ShowInFolder(first->file);
-            else if (DirExists(first->opt.dir)) ShellOpen(first->opt.dir);
-        }
+        RevealItem(first);
         break;
     case IDM_COPY_LINK: {
         std::wstring s;
