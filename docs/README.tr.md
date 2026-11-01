@@ -10,7 +10,7 @@ Bir bağlantı kopyalayın, tek bir düğmeye basın. Hepsi bu.
 
 <br>
 
-### [⬇️ YouTubeToPC-Setup-1.3.1.exe indir](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.1/YouTubeToPC-Setup-1.3.1.exe)
+### [⬇️ YouTubeToPC-Setup-1.3.2.exe indir](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.2/YouTubeToPC-Setup-1.3.2.exe)
 
 1,3 MB · Windows 10/11 (64 bit) · düğmeye basın, dosya hemen insin
 

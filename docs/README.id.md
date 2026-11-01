@@ -10,7 +10,7 @@ Salin tautan, tekan satu tombol. Itu saja.
 
 <br>
 
-### [⬇️ Unduh YouTubeToPC-Setup-1.3.1.exe](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.1/YouTubeToPC-Setup-1.3.1.exe)
+### [⬇️ Unduh YouTubeToPC-Setup-1.3.2.exe](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.2/YouTubeToPC-Setup-1.3.2.exe)
 
 1,3 MB · Windows 10/11 (64-bit) · tekan tombolnya, berkas langsung terunduh
 
