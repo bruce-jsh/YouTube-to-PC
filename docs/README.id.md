@@ -4,33 +4,6 @@
 
 # YouTube to PC
 
-**Cara paling sederhana menyimpan video dan musik YouTube ke PC Anda**
-
-Salin tautan, tekan satu tombol. Itu saja.
-
-<br>
-
-### [⬇️ Unduh YouTubeToPC-Setup-1.3.2.exe](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.2/YouTubeToPC-Setup-1.3.2.exe)
-
-1,3 MB · Windows 10/11 (64-bit) · tekan tombolnya, berkas langsung terunduh
-
-Diblokir Windows atau peramban? [Begini cara mengatasinya](troubleshooting.id.md).
-
-
-<img src="images/app-main.png" width="620" alt="YouTube to PC">
-
-*Tempel tautan dan unduhan dimulai.*
-
-<img src="images/app-menu.png" width="620" alt="">
-
-*Menghapus dari daftar dan menghapus berkas adalah dua pilihan berbeda.*
-
-<img src="images/app-languages.png" width="620" alt="">
-
-*Lima belas bahasa, dipilih di pengaturan.*
-
-<br>
-
 [한국어](README.ko.md) ·
 [Türkçe](README.tr.md) ·
 [Монгол](README.mn.md) ·
@@ -47,7 +20,29 @@ Diblokir Windows atau peramban? [Begini cara mengatasinya](troubleshooting.id.md
 **Bahasa Indonesia** ·
 [日本語](README.ja.md)
 
+**Cara paling sederhana menyimpan video dan musik YouTube ke PC Anda**
 
+Salin tautan, tekan satu tombol. Itu saja.
+
+<br>
+
+### [⬇️ Unduh YouTubeToPC-Setup-1.3.2.exe](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.2/YouTubeToPC-Setup-1.3.2.exe)
+
+1,3 MB · Windows 10/11 (64-bit) · tekan tombolnya, berkas langsung terunduh
+
+Diblokir Windows atau peramban? [Begini cara mengatasinya](troubleshooting.id.md).
+
+<img src="images/app-main.png" width="620" alt="YouTube to PC">
+
+*Tempel tautan dan unduhan dimulai.*
+
+<img src="images/app-menu.png" width="620" alt="">
+
+*Menghapus dari daftar dan menghapus berkas adalah dua pilihan berbeda.*
+
+<img src="images/app-languages.png" width="620" alt="">
+
+*Lima belas bahasa, dipilih di pengaturan.*
 </div>
 
 ---

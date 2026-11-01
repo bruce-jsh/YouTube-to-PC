@@ -4,33 +4,6 @@
 
 # YouTube to PC
 
-**Cách đơn giản nhất để lưu video và nhạc YouTube về máy tính**
-
-Sao chép liên kết, nhấn một nút. Chỉ vậy thôi.
-
-<br>
-
-### [⬇️ Tải YouTubeToPC-Setup-1.3.2.exe](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.2/YouTubeToPC-Setup-1.3.2.exe)
-
-1,3 MB · Windows 10/11 (64-bit) · nhấn nút là tệp tải về ngay
-
-Bị Windows hoặc trình duyệt chặn? [Cách xử lý ở đây](troubleshooting.vi.md).
-
-
-<img src="images/app-main.png" width="620" alt="YouTube to PC">
-
-*Dán liên kết là bắt đầu tải.*
-
-<img src="images/app-menu.png" width="620" alt="">
-
-*Xóa khỏi danh sách và xóa cả tệp là hai lựa chọn riêng.*
-
-<img src="images/app-languages.png" width="620" alt="">
-
-*Mười lăm ngôn ngữ, chọn trong phần cài đặt.*
-
-<br>
-
 [한국어](README.ko.md) ·
 [Türkçe](README.tr.md) ·
 [Монгол](README.mn.md) ·
@@ -47,7 +20,29 @@ Bị Windows hoặc trình duyệt chặn? [Cách xử lý ở đây](troublesho
 [Bahasa Indonesia](README.id.md) ·
 [日本語](README.ja.md)
 
+**Cách đơn giản nhất để lưu video và nhạc YouTube về máy tính**
 
+Sao chép liên kết, nhấn một nút. Chỉ vậy thôi.
+
+<br>
+
+### [⬇️ Tải YouTubeToPC-Setup-1.3.2.exe](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.2/YouTubeToPC-Setup-1.3.2.exe)
+
+1,3 MB · Windows 10/11 (64-bit) · nhấn nút là tệp tải về ngay
+
+Bị Windows hoặc trình duyệt chặn? [Cách xử lý ở đây](troubleshooting.vi.md).
+
+<img src="images/app-main.png" width="620" alt="YouTube to PC">
+
+*Dán liên kết là bắt đầu tải.*
+
+<img src="images/app-menu.png" width="620" alt="">
+
+*Xóa khỏi danh sách và xóa cả tệp là hai lựa chọn riêng.*
+
+<img src="images/app-languages.png" width="620" alt="">
+
+*Mười lăm ngôn ngữ, chọn trong phần cài đặt.*
 </div>
 
 ---

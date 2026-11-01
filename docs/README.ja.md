@@ -4,33 +4,6 @@
 
 # YouTube to PC
 
-**YouTube の動画と音楽を PC に保存する、いちばん簡単な方法**
-
-リンクをコピーして、ボタンをひとつ押すだけです。
-
-<br>
-
-### [⬇️ YouTubeToPC-Setup-1.3.2.exe をダウンロード](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.2/YouTubeToPC-Setup-1.3.2.exe)
-
-1.3 MB · Windows 10/11 (64 ビット) · ボタンを押すとすぐに保存されます
-
-Windows やブラウザーにブロックされますか? [対処方法はこちら](troubleshooting.ja.md)。
-
-
-<img src="images/app-main.png" width="620" alt="YouTube to PC">
-
-*リンクを貼り付ければ取得が始まります。*
-
-<img src="images/app-menu.png" width="620" alt="">
-
-*リストから消すのとファイルごと消すのは別の操作です。*
-
-<img src="images/app-languages.png" width="620" alt="">
-
-*15 の言語を設定から選べます。*
-
-<br>
-
 [한국어](README.ko.md) ·
 [Türkçe](README.tr.md) ·
 [Монгол](README.mn.md) ·
@@ -47,7 +20,29 @@ Windows やブラウザーにブロックされますか? [対処方法はこち
 [Bahasa Indonesia](README.id.md) ·
 **日本語**
 
+**YouTube の動画と音楽を PC に保存する、いちばん簡単な方法**
 
+リンクをコピーして、ボタンをひとつ押すだけです。
+
+<br>
+
+### [⬇️ YouTubeToPC-Setup-1.3.2.exe をダウンロード](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.2/YouTubeToPC-Setup-1.3.2.exe)
+
+1.3 MB · Windows 10/11 (64 ビット) · ボタンを押すとすぐに保存されます
+
+Windows やブラウザーにブロックされますか? [対処方法はこちら](troubleshooting.ja.md)。
+
+<img src="images/app-main.png" width="620" alt="YouTube to PC">
+
+*リンクを貼り付ければ取得が始まります。*
+
+<img src="images/app-menu.png" width="620" alt="">
+
+*リストから消すのとファイルごと消すのは別の操作です。*
+
+<img src="images/app-languages.png" width="620" alt="">
+
+*15 の言語を設定から選べます。*
 </div>
 
 ---

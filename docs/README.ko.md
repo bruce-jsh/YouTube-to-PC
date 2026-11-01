@@ -4,6 +4,22 @@
 
 # YouTube to PC
 
+**한국어** ·
+[Türkçe](README.tr.md) ·
+[Монгол](README.mn.md) ·
+[English](../README.md) ·
+[简体中文](README.zh-Hans.md) ·
+[繁體中文](README.zh-Hant.md) ·
+[Español](README.es.md) ·
+[Français](README.fr.md) ·
+[Deutsch](README.de.md) ·
+[Português](README.pt.md) ·
+[Русский](README.ru.md) ·
+[Tiếng Việt](README.vi.md) ·
+[ไทย](README.th.md) ·
+[Bahasa Indonesia](README.id.md) ·
+[日本語](README.ja.md)
+
 **유튜브 영상과 음악을 내 PC에 저장하는 가장 간단한 방법**
 
 링크를 복사하고 버튼 한 번. 그게 전부입니다.
@@ -27,26 +43,6 @@ Windows나 브라우저가 막나요? [해결 방법을 정리해 두었습니�
 <img src="images/app-languages.png" width="620" alt="">
 
 *15개 언어, 설정에서 고릅니다.*
-
-<br>
-
-**한국어** ·
-[Türkçe](README.tr.md) ·
-[Монгол](README.mn.md) ·
-[English](../README.md) ·
-[简体中文](README.zh-Hans.md) ·
-[繁體中文](README.zh-Hant.md) ·
-[Español](README.es.md) ·
-[Français](README.fr.md) ·
-[Deutsch](README.de.md) ·
-[Português](README.pt.md) ·
-[Русский](README.ru.md) ·
-[Tiếng Việt](README.vi.md) ·
-[ไทย](README.th.md) ·
-[Bahasa Indonesia](README.id.md) ·
-[日本語](README.ja.md)
-
-
 </div>
 
 ---

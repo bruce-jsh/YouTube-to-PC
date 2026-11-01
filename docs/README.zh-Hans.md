@@ -4,33 +4,6 @@
 
 # YouTube to PC
 
-**把 YouTube 视频和音乐保存到电脑，最简单的方式**
-
-复制链接，按一下按钮，就这么简单。
-
-<br>
-
-### [⬇️ 下载 YouTubeToPC-Setup-1.3.2.exe](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.2/YouTubeToPC-Setup-1.3.2.exe)
-
-1.3 MB · Windows 10/11（64 位）· 点击按钮即可直接下载
-
-被 Windows 或浏览器拦住了？[这里有解决办法](troubleshooting.zh-Hans.md)。
-
-
-<img src="images/app-main.png" width="620" alt="YouTube to PC">
-
-*粘贴链接即可开始下载。*
-
-<img src="images/app-menu.png" width="620" alt="">
-
-*从列表移除和连同文件删除是两个独立选项。*
-
-<img src="images/app-languages.png" width="620" alt="">
-
-*15 种语言，可在设置中选择。*
-
-<br>
-
 [한국어](README.ko.md) ·
 [Türkçe](README.tr.md) ·
 [Монгол](README.mn.md) ·
@@ -47,7 +20,29 @@
 [Bahasa Indonesia](README.id.md) ·
 [日本語](README.ja.md)
 
+**把 YouTube 视频和音乐保存到电脑，最简单的方式**
 
+复制链接，按一下按钮，就这么简单。
+
+<br>
+
+### [⬇️ 下载 YouTubeToPC-Setup-1.3.2.exe](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.2/YouTubeToPC-Setup-1.3.2.exe)
+
+1.3 MB · Windows 10/11（64 位）· 点击按钮即可直接下载
+
+被 Windows 或浏览器拦住了？[这里有解决办法](troubleshooting.zh-Hans.md)。
+
+<img src="images/app-main.png" width="620" alt="YouTube to PC">
+
+*粘贴链接即可开始下载。*
+
+<img src="images/app-menu.png" width="620" alt="">
+
+*从列表移除和连同文件删除是两个独立选项。*
+
+<img src="images/app-languages.png" width="620" alt="">
+
+*15 种语言，可在设置中选择。*
 </div>
 
 ---

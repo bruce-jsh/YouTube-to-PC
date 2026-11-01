@@ -4,33 +4,6 @@
 
 # YouTube to PC
 
-**วิธีที่ง่ายที่สุดในการบันทึกวิดีโอและเพลงจาก YouTube ลงพีซี**
-
-คัดลอกลิงก์ แล้วกดปุ่มเดียว เท่านั้นเอง
-
-<br>
-
-### [⬇️ ดาวน์โหลด YouTubeToPC-Setup-1.3.2.exe](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.2/YouTubeToPC-Setup-1.3.2.exe)
-
-1.3 MB · Windows 10/11 (64 บิต) · กดปุ่มแล้วไฟล์จะดาวน์โหลดทันที
-
-Windows หรือเบราว์เซอร์บล็อกอยู่หรือไม่ [วิธีแก้อยู่ที่นี่](troubleshooting.th.md)
-
-
-<img src="images/app-main.png" width="620" alt="YouTube to PC">
-
-*วางลิงก์แล้วเริ่มดาวน์โหลดทันที*
-
-<img src="images/app-menu.png" width="620" alt="">
-
-*ลบออกจากรายการกับลบพร้อมไฟล์เป็นคนละคำสั่ง*
-
-<img src="images/app-languages.png" width="620" alt="">
-
-*สิบห้าภาษา เลือกได้ในการตั้งค่า*
-
-<br>
-
 [한국어](README.ko.md) ·
 [Türkçe](README.tr.md) ·
 [Монгол](README.mn.md) ·
@@ -47,7 +20,29 @@ Windows หรือเบราว์เซอร์บล็อกอยู่
 [Bahasa Indonesia](README.id.md) ·
 [日本語](README.ja.md)
 
+**วิธีที่ง่ายที่สุดในการบันทึกวิดีโอและเพลงจาก YouTube ลงพีซี**
 
+คัดลอกลิงก์ แล้วกดปุ่มเดียว เท่านั้นเอง
+
+<br>
+
+### [⬇️ ดาวน์โหลด YouTubeToPC-Setup-1.3.2.exe](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.2/YouTubeToPC-Setup-1.3.2.exe)
+
+1.3 MB · Windows 10/11 (64 บิต) · กดปุ่มแล้วไฟล์จะดาวน์โหลดทันที
+
+Windows หรือเบราว์เซอร์บล็อกอยู่หรือไม่ [วิธีแก้อยู่ที่นี่](troubleshooting.th.md)
+
+<img src="images/app-main.png" width="620" alt="YouTube to PC">
+
+*วางลิงก์แล้วเริ่มดาวน์โหลดทันที*
+
+<img src="images/app-menu.png" width="620" alt="">
+
+*ลบออกจากรายการกับลบพร้อมไฟล์เป็นคนละคำสั่ง*
+
+<img src="images/app-languages.png" width="620" alt="">
+
+*สิบห้าภาษา เลือกได้ในการตั้งค่า*
 </div>
 
 ---

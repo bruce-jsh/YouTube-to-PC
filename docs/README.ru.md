@@ -4,33 +4,6 @@
 
 # YouTube to PC
 
-**Самый простой способ сохранить видео и музыку с YouTube на компьютер**
-
-Скопируйте ссылку, нажмите одну кнопку. Вот и всё.
-
-<br>
-
-### [⬇️ Скачать YouTubeToPC-Setup-1.3.2.exe](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.2/YouTubeToPC-Setup-1.3.2.exe)
-
-1,3 МБ · Windows 10/11 (64 бит) · нажмите кнопку, файл загрузится сразу
-
-Windows или браузер блокируют? [Вот как это обойти](troubleshooting.ru.md).
-
-
-<img src="images/app-main.png" width="620" alt="YouTube to PC">
-
-*Вставьте ссылку, и загрузка начнется.*
-
-<img src="images/app-menu.png" width="620" alt="">
-
-*Убрать из списка и удалить файл это разные команды.*
-
-<img src="images/app-languages.png" width="620" alt="">
-
-*Пятнадцать языков, выбор в настройках.*
-
-<br>
-
 [한국어](README.ko.md) ·
 [Türkçe](README.tr.md) ·
 [Монгол](README.mn.md) ·
@@ -47,7 +20,29 @@ Windows или браузер блокируют? [Вот как это обой
 [Bahasa Indonesia](README.id.md) ·
 [日本語](README.ja.md)
 
+**Самый простой способ сохранить видео и музыку с YouTube на компьютер**
 
+Скопируйте ссылку, нажмите одну кнопку. Вот и всё.
+
+<br>
+
+### [⬇️ Скачать YouTubeToPC-Setup-1.3.2.exe](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.2/YouTubeToPC-Setup-1.3.2.exe)
+
+1,3 МБ · Windows 10/11 (64 бит) · нажмите кнопку, файл загрузится сразу
+
+Windows или браузер блокируют? [Вот как это обойти](troubleshooting.ru.md).
+
+<img src="images/app-main.png" width="620" alt="YouTube to PC">
+
+*Вставьте ссылку, и загрузка начнется.*
+
+<img src="images/app-menu.png" width="620" alt="">
+
+*Убрать из списка и удалить файл это разные команды.*
+
+<img src="images/app-languages.png" width="620" alt="">
+
+*Пятнадцать языков, выбор в настройках.*
 </div>
 
 ---

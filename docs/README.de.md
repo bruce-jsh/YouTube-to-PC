@@ -4,33 +4,6 @@
 
 # YouTube to PC
 
-**Der einfachste Weg, YouTube-Videos und -Musik auf dem PC zu speichern**
-
-Link kopieren, eine Schaltfläche drücken. Mehr nicht.
-
-<br>
-
-### [⬇️ YouTubeToPC-Setup-1.3.2.exe herunterladen](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.2/YouTubeToPC-Setup-1.3.2.exe)
-
-1,3 MB · Windows 10/11 (64 Bit) · auf die Schaltfläche klicken, die Datei wird sofort geladen
-
-Von Windows oder dem Browser blockiert? [So kommen Sie daran vorbei](troubleshooting.de.md).
-
-
-<img src="images/app-main.png" width="620" alt="YouTube to PC">
-
-*Link einfügen, der Download startet.*
-
-<img src="images/app-menu.png" width="620" alt="">
-
-*Aus der Liste entfernen und die Datei löschen sind getrennte Befehle.*
-
-<img src="images/app-languages.png" width="620" alt="">
-
-*Fünfzehn Sprachen, in den Einstellungen wählbar.*
-
-<br>
-
 [한국어](README.ko.md) ·
 [Türkçe](README.tr.md) ·
 [Монгол](README.mn.md) ·
@@ -47,7 +20,29 @@ Von Windows oder dem Browser blockiert? [So kommen Sie daran vorbei](troubleshoo
 [Bahasa Indonesia](README.id.md) ·
 [日本語](README.ja.md)
 
+**Der einfachste Weg, YouTube-Videos und -Musik auf dem PC zu speichern**
 
+Link kopieren, eine Schaltfläche drücken. Mehr nicht.
+
+<br>
+
+### [⬇️ YouTubeToPC-Setup-1.3.2.exe herunterladen](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.2/YouTubeToPC-Setup-1.3.2.exe)
+
+1,3 MB · Windows 10/11 (64 Bit) · auf die Schaltfläche klicken, die Datei wird sofort geladen
+
+Von Windows oder dem Browser blockiert? [So kommen Sie daran vorbei](troubleshooting.de.md).
+
+<img src="images/app-main.png" width="620" alt="YouTube to PC">
+
+*Link einfügen, der Download startet.*
+
+<img src="images/app-menu.png" width="620" alt="">
+
+*Aus der Liste entfernen und die Datei löschen sind getrennte Befehle.*
+
+<img src="images/app-languages.png" width="620" alt="">
+
+*Fünfzehn Sprachen, in den Einstellungen wählbar.*
 </div>
 
 ---

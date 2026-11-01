@@ -4,33 +4,6 @@
 
 # YouTube to PC
 
-**YouTube бичлэг, хөгжмийг компьютерт хадгалах хамгийн энгийн арга**
-
-Холбоосыг хуулаад нэг товч дарна. Тэгээд л боллоо.
-
-<br>
-
-### [⬇️ YouTubeToPC-Setup-1.3.2.exe татах](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.2/YouTubeToPC-Setup-1.3.2.exe)
-
-1.3 МБ · Windows 10/11 (64 бит) · товчийг дарахад шууд татагдана
-
-Windows эсвэл хөтөч хориглож байна уу? [Шийдвэрлэх арга энд байна](troubleshooting.mn.md).
-
-
-<img src="images/app-main.png" width="620" alt="YouTube to PC">
-
-*Холбоосыг буулгахад татаж эхэлнэ.*
-
-<img src="images/app-menu.png" width="620" alt="">
-
-*Жагсаалтаас хасах, файлыг устгах хоёр тусдаа сонголт.*
-
-<img src="images/app-languages.png" width="620" alt="">
-
-*Арван таван хэл, тохиргооноос сонгоно.*
-
-<br>
-
 [한국어](README.ko.md) ·
 [Türkçe](README.tr.md) ·
 **Монгол** ·
@@ -47,7 +20,29 @@ Windows эсвэл хөтөч хориглож байна уу? [Шийдвэр�
 [Bahasa Indonesia](README.id.md) ·
 [日本語](README.ja.md)
 
+**YouTube бичлэг, хөгжмийг компьютерт хадгалах хамгийн энгийн арга**
 
+Холбоосыг хуулаад нэг товч дарна. Тэгээд л боллоо.
+
+<br>
+
+### [⬇️ YouTubeToPC-Setup-1.3.2.exe татах](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.2/YouTubeToPC-Setup-1.3.2.exe)
+
+1.3 МБ · Windows 10/11 (64 бит) · товчийг дарахад шууд татагдана
+
+Windows эсвэл хөтөч хориглож байна уу? [Шийдвэрлэх арга энд байна](troubleshooting.mn.md).
+
+<img src="images/app-main.png" width="620" alt="YouTube to PC">
+
+*Холбоосыг буулгахад татаж эхэлнэ.*
+
+<img src="images/app-menu.png" width="620" alt="">
+
+*Жагсаалтаас хасах, файлыг устгах хоёр тусдаа сонголт.*
+
+<img src="images/app-languages.png" width="620" alt="">
+
+*Арван таван хэл, тохиргооноос сонгоно.*
 </div>
 
 ---

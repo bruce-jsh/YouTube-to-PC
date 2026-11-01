@@ -4,33 +4,6 @@
 
 # YouTube to PC
 
-**YouTube videolarını ve müziklerini bilgisayarınıza kaydetmenin en basit yolu**
-
-Bir bağlantı kopyalayın, tek bir düğmeye basın. Hepsi bu.
-
-<br>
-
-### [⬇️ YouTubeToPC-Setup-1.3.2.exe indir](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.2/YouTubeToPC-Setup-1.3.2.exe)
-
-1,3 MB · Windows 10/11 (64 bit) · düğmeye basın, dosya hemen insin
-
-Windows ya da tarayıcınız engelliyor mu? [Nasıl aşılacağı burada](troubleshooting.tr.md).
-
-
-<img src="images/app-main.png" width="620" alt="YouTube to PC">
-
-*Bağlantıyı yapıştırın, indirme başlasın.*
-
-<img src="images/app-menu.png" width="620" alt="">
-
-*Listeden kaldırmak ile dosyayı silmek ayrı seçeneklerdir.*
-
-<img src="images/app-languages.png" width="620" alt="">
-
-*On beş dil, ayarlardan seçilir.*
-
-<br>
-
 [한국어](README.ko.md) ·
 **Türkçe** ·
 [Монгол](README.mn.md) ·
@@ -47,7 +20,29 @@ Windows ya da tarayıcınız engelliyor mu? [Nasıl aşılacağı burada](troubl
 [Bahasa Indonesia](README.id.md) ·
 [日本語](README.ja.md)
 
+**YouTube videolarını ve müziklerini bilgisayarınıza kaydetmenin en basit yolu**
 
+Bir bağlantı kopyalayın, tek bir düğmeye basın. Hepsi bu.
+
+<br>
+
+### [⬇️ YouTubeToPC-Setup-1.3.2.exe indir](https://github.com/bruce-jsh/YouTube-to-PC/releases/download/v1.3.2/YouTubeToPC-Setup-1.3.2.exe)
+
+1,3 MB · Windows 10/11 (64 bit) · düğmeye basın, dosya hemen insin
+
+Windows ya da tarayıcınız engelliyor mu? [Nasıl aşılacağı burada](troubleshooting.tr.md).
+
+<img src="images/app-main.png" width="620" alt="YouTube to PC">
+
+*Bağlantıyı yapıştırın, indirme başlasın.*
+
+<img src="images/app-menu.png" width="620" alt="">
+
+*Listeden kaldırmak ile dosyayı silmek ayrı seçeneklerdir.*
+
+<img src="images/app-languages.png" width="620" alt="">
+
+*On beş dil, ayarlardan seçilir.*
 </div>
 
 ---
