@@ -72,6 +72,9 @@ Y(S_PICK_FOLDER, L"Хадгалах хавтсаа сонгоно уу", L"Bir k
 // ---------------------------------------------------------------- status bar
 Y(S_STATUS_COUNTS, L"Явагдаж буй %d   ·   Дараалалд %d   ·   Дууссан %d", L"Etkin %d   ·   Sırada %d   ·   Biten %d")
 Y(S_STATUS_FAILED, L"   ·   Амжилтгүй %d", L"   ·   Başarısız %d")
+Y(S_STATUS_WAITING, L"   ·   YouTube-ийн хязгаарлалтаар %d секунд хүлээж байна", L"   ·   YouTube sınırı nedeniyle %d sn bekleniyor")
+Y(S_SUB_WAIT, L"хадмалыг дараа нь татна", L"altyazı ardından gelecek")
+Y(S_SUB_FAILED, L"YouTube хадмалыг өгсөнгүй", L"YouTube altyazıyı vermedi")
 Y(S_STATUS_NO_YTDLP, L"yt-dlp олдсонгүй", L"yt-dlp bulunamadı")
 Y(S_STATUS_NO_FFMPEG, L"  ·  ffmpeg байхгүй", L"  ·  ffmpeg yok")
 Y(S_STATUS_UPDATING, L"yt-dlp шинэчлэлтийг шалгаж байна…", L"yt-dlp güncellemesi denetleniyor…")
@@ -172,6 +175,10 @@ Y(S_SET_NOTE_SKIP, L"Ижил нэртэй файл аль хэдийн байв
 
 Y(S_SET_CONCURRENT, L"Зэрэг татах тоо", L"Eşzamanlı indirme")
 Y(S_SET_CONCURRENT_N, L"%d ширхэг", L"%d")
+Y(S_CONC_SAFE, L"аюулгүй", L"güvenli")
+Y(S_CONC_STABLE, L"тогтвортой", L"kararlı")
+Y(S_CONC_FAST, L"хурдан", L"hızlı")
+Y(S_CONC_RISKY, L"хориглох эрсдэлтэй", L"riskli")
 Y(S_SET_CONCURRENT_NOTE, L"Хэт олныг зэрэг татвал YouTube түр хаах магадлалтай. 3 орчим нь тогтвортой.", L"Aynı anda çok fazlası YouTube tarafından geçici engellemeye yol açabilir. 3 civarı güvenlidir.")
 Y(S_SET_FPS, L"Кадрын давтамж", L"Kare hızı")
 Y(S_SET_CODEC, L"Дүрсний кодек", L"Video kodeki")

@@ -50,7 +50,23 @@ enum {
 };
 
 enum { MODE_DEFAULT, MODE_QUICK, MODE_DIALOG };
-enum { TIMER_SAVE = 1, TIMER_HINT = 2, TIMER_AUTOUPDATE = 3, TIMER_MENUHOVER = 4, TIMER_MENUWATCH = 5 };
+enum { TIMER_SAVE = 1, TIMER_HINT = 2, TIMER_AUTOUPDATE = 3, TIMER_MENUHOVER = 4, TIMER_MENUWATCH = 5, TIMER_QUEUE = 6,
+       TIMER_SUBS = 7 };
+
+// Pacing for the download queue. Each video costs yt-dlp a fresh player fetch,
+// so a playlist started all at once reads as a flood and YouTube answers with
+// 429 for every one of them. Spacing the starts and backing off when it does
+// happen is what keeps a thirty video playlist going.
+constexpr long long kStartGapMs = 1200;
+// How many videos one yt-dlp process may carry. Sharing a process saves about
+// four seconds per video, but a process works through its videos one after
+// another, so rows sat waiting behind each other and the queue stopped looking
+// or behaving parallel. One video per process keeps every slot busy with a row
+// of its own, the way people expect a download manager to work.
+constexpr int kBatchMax = 1;
+constexpr int kMaxStrikes = 6;
+constexpr long long kHoldMs[kMaxStrikes] = {15000, 30000, 60000, 120000, 240000, 300000};
+constexpr int kMaxAutoRetry = 12;
 // Long enough that sliding the pointer across the bar on the way somewhere else
 // does not fling a menu open.
 constexpr UINT kMenuHoverDelay = 250;
@@ -122,7 +138,9 @@ struct Analysis {
     int forceKind;
 };
 std::map<int, Analysis> g_analyze;
-std::map<int, int> g_dlProc;
+// One yt-dlp process can carry several downloads; this maps each process to the
+// list rows it is working through, in the order it will fetch them.
+std::map<int, std::vector<int>> g_dlBatch;
 std::map<int, int> g_convProc;
 
 struct PendingDlg {
@@ -132,6 +150,35 @@ struct PendingDlg {
 };
 std::deque<PendingDlg> g_dialogs;
 bool g_dialogOpen = false;
+
+long long g_lastStartMs = 0;   // when a download process was last launched
+long long g_holdUntilMs = 0;   // nothing starts before this, set by a rate limit
+int g_rateStrikes = 0;         // consecutive rate-limit incidents, drives the wait
+int g_paceLimit = 0;           // temporary cap on concurrency, 0 means use the setting
+
+// A rate limit hits everything in flight at once, so one incident must not be
+// counted once per download. While the hold is still running it is the same
+// incident, and the queue simply waits it out.
+void NoteRateLimit() {
+    long long now = NowMs();
+    if (now < g_holdUntilMs) return;  // already waiting on this one
+    g_rateStrikes = std::min(g_rateStrikes + 1, kMaxStrikes);
+    g_holdUntilMs = std::max(g_holdUntilMs, now + kHoldMs[g_rateStrikes - 1]);
+    g_paceLimit = 1;  // creep back in one at a time
+}
+
+// Getting a file proves the block has lifted, so let the queue speed up again.
+void NoteDownloadWorked() {
+    g_rateStrikes = 0;
+    if (g_paceLimit > 0) g_paceLimit = g_paceLimit >= kMaxConcurrent ? 0 : g_paceLimit + 1;
+}
+
+// Rate limiting is YouTube pushing back, not a problem with the video, so it is
+// worth waiting out rather than reporting as a failure.
+bool IsRateLimit(const std::wstring& raw) {
+    return raw.find(L"HTTP Error 429") != std::wstring::npos || raw.find(L"Too Many Requests") != std::wstring::npos ||
+           raw.find(L"HTTP Error 403") != std::wstring::npos;
+}
 
 int g_batchDone = 0, g_batchFailed = 0;
 ITaskbarList3* g_taskbar = nullptr;
@@ -535,6 +582,8 @@ std::wstring MetaLine(const Item* it, COLORREF& color) {
         add(FormatSize(it->size));
         add(it->info);
         add(it->channel);
+        if (it->subState == SUB_WAIT) add(T(S_SUB_WAIT));
+        else if (it->subState == SUB_FAILED) add(T(S_SUB_FAILED));
         break;
     case St::Error:
         add(it->err.empty() ? T(S_ST_FAILED_MSG) : it->err);
@@ -917,6 +966,8 @@ void UpdateStatus() {
     }
     g_statusText = Fmt(T(S_STATUS_COUNTS), active, queued, done);
     if (failed) g_statusText += Fmt(T(S_STATUS_FAILED), failed);
+    long long wait = g_holdUntilMs - NowMs();
+    if (wait > 0 && queued > 0) g_statusText += Fmt(T(S_STATUS_WAITING), (int)((wait + 999) / 1000));
     InvalidateRect(g_hwnd, &g_rcStatus, FALSE);
     UpdateTaskbar();
 }
@@ -926,30 +977,84 @@ void UpdateStatus() {
 void StartQueued() {
     if (g_tools.ytdlp.empty() || g_updateProc) return;
     int limit = std::max(1, std::min(kMaxConcurrent, g_set.concurrency));
-    int running = (int)g_dlProc.size();
-    for (auto& up : g_items) {
+    if (g_paceLimit > 0) limit = std::min(limit, g_paceLimit);  // easing back after a block
+    int running = (int)g_dlBatch.size();
+    long long now = NowMs();
+    // YouTube counts requests, not downloads. Every video costs a fresh player
+    // fetch, so starting a queue all at once looks like a flood and earns a
+    // rate limit that then fails the whole playlist.
+    if (now < g_holdUntilMs) {
+        SetTimer(g_hwnd, TIMER_QUEUE, (UINT)std::min(2000LL, g_holdUntilMs - now) + 50, nullptr);
+        UpdateStatus();
+        return;
+    }
+    for (;;) {
         if (running >= limit) break;
-        Item* it = up.get();
-        if (it->st != St::Queued) continue;
-        it->gotDone = false;
-        it->lastError.clear();
-        it->err.clear();
-        it->pct = 0;
-        it->done = it->total = 0;
-        it->speed = 0;
-        it->eta = -1;
-        int pid = ProcStart(g_tools.ytdlp, DownloadArgs(g_tools, *it), g_hwnd, true);
+        if (running > 0 && now - g_lastStartMs < kStartGapMs) {
+            SetTimer(g_hwnd, TIMER_QUEUE, (UINT)(kStartGapMs - (now - g_lastStartMs)) + 50, nullptr);
+            break;
+        }
+        // A process works through its videos one after another, so a long
+        // batch near the end of a playlist leaves the other slots idle while it
+        // finishes alone. Batch only while plenty is waiting, and keep it small.
+        int waiting = 0;
+        for (auto& up : g_items)
+            if (up->st == St::Queued && !up->proc) ++waiting;
+        int per = waiting >= 3 * limit ? kBatchMax : 1;
+
+        // Gather what one process can take: queued downloads whose options are
+        // identical, so a single command line covers them all.
+        std::vector<Item*> batch;
+        for (auto& up : g_items) {
+            Item* it = up.get();
+            if (it->st != St::Queued || it->proc) continue;  // proc set means already in a batch
+            if (!batch.empty() && !SameDownloadOptions(batch.front()->opt, it->opt)) continue;
+            // Lines are told apart by video id, so a row without one travels alone.
+            if (it->vid.empty()) {
+                if (!batch.empty()) continue;
+                batch.push_back(it);
+                break;
+            }
+            if (!batch.empty() && batch.front()->vid.empty()) break;
+            batch.push_back(it);
+            if ((int)batch.size() >= per) break;
+        }
+        if (batch.empty()) break;
+        if (!batch.front()->opt.sub.empty()) EnsureDir(SubJobDir());
+
+        std::vector<const Item*> args(batch.begin(), batch.end());
+        for (Item* it : batch) {
+            it->gotDone = false;
+            it->lastError.clear();
+            it->err.clear();
+            it->pct = 0;
+            it->done = it->total = 0;
+            it->speed = 0;
+            it->eta = -1;
+            it->subState = SUB_OK;
+            it->subTries = 0;
+        }
+        int pid = ProcStart(g_tools.ytdlp, DownloadArgs(g_tools, args), g_hwnd, true);
         if (!pid) {
-            it->st = St::Error;
-            it->err = T(S_ERR_RUN_YTDLP);
-            InvalidateItem(it->id);
+            for (Item* it : batch) {
+                it->st = St::Error;
+                it->err = T(S_ERR_RUN_YTDLP);
+                InvalidateItem(it->id);
+            }
             continue;
         }
-        it->proc = pid;
-        it->st = St::Downloading;
-        g_dlProc[pid] = it->id;
+        std::vector<int> ids;
+        for (Item* it : batch) {
+            it->proc = pid;
+            // Only the first is fetched right away; the rest wait their turn
+            // inside the same process.
+            it->st = it == batch.front() ? St::Downloading : St::Queued;
+            ids.push_back(it->id);
+            InvalidateItem(it->id);
+        }
+        g_dlBatch[pid] = ids;
         ++running;
-        InvalidateItem(it->id);
+        g_lastStartMs = now = NowMs();
     }
     UpdateStatus();
 }
@@ -985,35 +1090,243 @@ void OnDownloadLine(Item* it, const std::wstring& s) {
         it->size = FileSize(path);
         it->info = BuildInfo(it->opt, f[0], f[1], f[2], f[3]);
         it->gotDone = true;
+    } else if (s.find(L"Unable to download video subtitles") != std::wstring::npos) {
+        // Only the subtitle was refused. The video carries on without it and
+        // the subtitle is asked for again once the video is in.
+        if (!it->opt.sub.empty()) it->subState = SUB_WAIT;
     } else if (s.find(L"ERROR") != std::wstring::npos) {
         it->lastError += s + L"\n";
     }
 }
 
-void OnDownloadExit(int itemId, const ProcExit* pe) {
-    Item* it = FindItem(itemId);
-    if (it) {
-        it->proc = 0;
+// ====================================================================== subtitles
+//
+// YouTube hands machine-translated subtitles to requests without a PO token
+// only sparingly: the first few in a playlist come through and the rest are
+// answered with 429. Retrying straight away does not help, so refused ones are
+// asked for again here, one at a time and further apart after each refusal,
+// from the information yt-dlp saved while the video downloaded.
+
+int g_subProc = 0, g_subItem = 0;
+long long g_subNextMs = 0;  // no subtitle request before this
+int g_subStrikes = 0;       // refusals in a row, sets how long to wait
+constexpr long long kSubGapMs = 8000;
+constexpr long long kSubHoldMs[] = {60000, 120000, 300000, 600000, 900000};
+constexpr int kSubHoldSteps = (int)(sizeof kSubHoldMs / sizeof kSubHoldMs[0]);
+constexpr int kSubMaxTries = 5;      // per subtitle
+constexpr int kSubMaxRefusals = 8;   // in a row across all of them, a little over an hour
+
+std::wstring InfoJsonFor(const Item* it) { return PathJoin(SubJobDir(), it->vid + L".info.json"); }
+
+bool HasSubtitleFile(const Item* it) {
+    std::wstring pat = PathJoin(PathDir(it->file), PathStem(it->file) + L".*.srt");
+    WIN32_FIND_DATAW fd{};
+    HANDLE h = FindFirstFileW(pat.c_str(), &fd);
+    if (h == INVALID_HANDLE_VALUE) return false;
+    FindClose(h);
+    return true;
+}
+
+void DropSubtitleJob(Item* it, int state) {
+    it->subState = state;
+    if (!it->vid.empty()) DeleteFileW(InfoJsonFor(it).c_str());
+    InvalidateItem(it->id);
+}
+
+void StartSubtitleJob() {
+    if (g_subProc || g_tools.ytdlp.empty() || g_updateProc) return;
+    // Take turns: the one asked least often goes next, so a subtitle YouTube
+    // keeps refusing does not hold up all the others.
+    Item* next = nullptr;
+    for (auto& up : g_items)
+        if (up->subState == SUB_WAIT && up->st == St::Done && (!next || up->subTries < next->subTries)) next = up.get();
+    if (!next) return;
+    long long now = NowMs();
+    if (now < g_subNextMs) {
+        SetTimer(g_hwnd, TIMER_SUBS, (UINT)std::min(60000LL, g_subNextMs - now) + 50, nullptr);
+        return;
+    }
+    std::wstring info = next->vid.empty() ? std::wstring() : InfoJsonFor(next);
+    if (info.empty() || !FileExists(info) || !FileExists(next->file)) {
+        DropSubtitleJob(next, SUB_FAILED);
+        StartSubtitleJob();
+        return;
+    }
+    g_subProc = ProcStart(g_tools.ytdlp, SubtitleArgs(g_tools, *next, info), g_hwnd, false);
+    if (!g_subProc) {
+        DropSubtitleJob(next, SUB_FAILED);
+        return;
+    }
+    g_subItem = next->id;
+}
+
+void OnSubtitleExit(const ProcExit* pe) {
+    Item* it = FindItem(g_subItem);
+    g_subProc = g_subItem = 0;
+    long long now = NowMs();
+    if (it && it->subState == SUB_WAIT) {
+        if (HasSubtitleFile(it)) {
+            g_subStrikes = 0;
+            g_subNextMs = now + kSubGapMs;
+            DropSubtitleJob(it, SUB_OK);
+        } else if (!pe->canceled && IsRateLimit(W(pe->output))) {
+            ++g_subStrikes;
+            g_subNextMs = now + kSubHoldMs[std::min(g_subStrikes, kSubHoldSteps) - 1];
+            if (++it->subTries >= kSubMaxTries) DropSubtitleJob(it, SUB_FAILED);
+            if (g_subStrikes >= kSubMaxRefusals) {
+                // Nothing has come through for over an hour; stop asking and
+                // say so on each row rather than keep trying all day.
+                for (auto& up : g_items)
+                    if (up->subState == SUB_WAIT) DropSubtitleJob(up.get(), SUB_FAILED);
+                g_subStrikes = 0;
+            }
+        } else {
+            g_subNextMs = now + kSubGapMs;
+            DropSubtitleJob(it, SUB_FAILED);
+        }
+        ScheduleSave();
+    }
+    StartSubtitleJob();
+}
+
+// Rows the user asked to stop. Stopping one row of a batch has to end the whole
+// process, and the rows that were not asked to stop go back in the queue.
+std::set<int> g_cancelWanted;
+
+// Settles one row once its part of a yt-dlp run is over. Called as soon as the
+// process moves on to the next video, and again at exit for whatever is left.
+void FinishItem(Item* it, bool canceled, const std::string& output) {
+    if (!it || !it->proc) return;
+    it->proc = 0;
+    {
         if (it->gotDone) {
             it->st = St::Done;
             it->isNew = true;
             it->pct = 100;
             it->err.clear();
+            it->autoRetry = 0;
+            NoteDownloadWorked();
             ++g_batchDone;
             if (g_set.notify == 2 && InBackground()) Notify(T(S_MSG_DONE_TITLE), it->title);
-        } else if (pe->canceled) {
-            it->st = St::Canceled;
+            // A refused subtitle is fetched now; otherwise the saved video
+            // information has served its purpose.
+            if (it->subState == SUB_WAIT) StartSubtitleJob();
+            else if (!it->vid.empty()) DeleteFileW(InfoJsonFor(it).c_str());
+        } else if (canceled) {
+            // Only the rows that were asked to stop count as stopped; the others
+            // just shared the process and are picked up again by a new one.
+            it->st = g_cancelWanted.count(it->id) ? St::Canceled : St::Queued;
+            g_cancelWanted.erase(it->id);
         } else {
-            it->st = St::Error;
-            it->err = FriendlyError(it->lastError.empty() ? W(pe->output) : it->lastError);
-            ++g_batchFailed;
-            if (g_set.notifyErrors && InBackground()) Notify(T(S_MSG_FAIL_TITLE), it->title + L"\n" + it->err);
+            // Downloads now keep yt-dlp's warnings, which can mention HTTP errors
+            // that did no harm, so judge the failure by its ERROR lines alone.
+            std::wstring raw = it->lastError;
+            if (raw.empty())
+                for (auto& line : Split(W(output), L'\n'))
+                    if (StartsWith(Trim(line), L"ERROR")) raw += line + L"\n";
+            if (raw.empty()) raw = W(output);
+            if (IsRateLimit(raw) && it->autoRetry < kMaxAutoRetry) {
+                // Not this video's fault and not worth a red line in the list:
+                // hold the whole queue back, then come around to it again.
+                ++it->autoRetry;
+                it->st = St::Queued;
+                it->err.clear();
+                NoteRateLimit();
+            } else {
+                it->st = St::Error;
+                it->err = FriendlyError(raw);
+                ++g_batchFailed;
+                if (g_set.notifyErrors && InBackground()) Notify(T(S_MSG_FAIL_TITLE), it->title + L"\n" + it->err);
+            }
+        }
+        if (!it->gotDone) {
+            it->subState = SUB_OK;  // a new attempt starts from scratch
+            if (!it->vid.empty()) DeleteFileW(InfoJsonFor(it).c_str());
         }
         InvalidateItem(it->id);
         ScheduleSave();
     }
+}
+
+// The process has gone. Settle every row it still held, then refill the slot.
+void OnBatchExit(const std::vector<int>& ids, const ProcExit* pe) {
+    for (int id : ids) FinishItem(FindItem(id), pe->canceled, pe->output);
     StartQueued();
     CheckBatchFinished();
+}
+
+// yt-dlp prints the video id at the start of our progress and completion lines,
+// and inside its own error lines as "[youtube] <id>: ...".
+std::wstring LineVideoId(const std::wstring& s) {
+    if (StartsWith(s, L"[P]") || StartsWith(s, L"[DONE]")) {
+        size_t from = s[1] == L'P' ? 3 : 6;
+        size_t bar = s.find(L'|', from);
+        return bar == std::wstring::npos ? L"" : s.substr(from, bar - from);
+    }
+    size_t p = s.find(L"[youtube] ");
+    if (p == std::wstring::npos) return L"";
+    p += 10;
+    size_t c = s.find(L':', p);
+    if (c == std::wstring::npos || c - p != 11) return L"";  // YouTube ids are 11 characters
+    return s.substr(p, c - p);
+}
+
+// Routes one line from a batch process to the row it is about. When the
+// process moves on to the next video, the one before it is finished.
+void OnBatchLine(int pid, const std::wstring& raw) {
+    auto b = g_dlBatch.find(pid);
+    if (b == g_dlBatch.end()) return;
+    std::wstring vid = LineVideoId(raw);
+
+    Item* target = nullptr;
+    Item* current = nullptr;
+    for (int id : b->second) {
+        Item* it = FindItem(id);
+        if (!it || !it->proc) continue;
+        if (!current && (it->st == St::Downloading || it->st == St::Processing)) current = it;
+        if (!vid.empty() && it->vid == vid) target = it;
+    }
+    if (!target) target = current;
+    if (!target) {  // nothing marked current yet: the first row still waiting
+        for (int id : b->second)
+            if (Item* it = FindItem(id); it && it->proc) { target = it; break; }
+    }
+    if (!target) return;
+
+    if (current && current != target && (StartsWith(raw, L"[P]") || StartsWith(raw, L"[DONE]"))) {
+        FinishItem(current, false, std::string());
+        UpdateStatus();
+    }
+    if (target->st == St::Queued) {
+        target->st = St::Downloading;
+        InvalidateItem(target->id);
+        UpdateStatus();  // the counts on the status bar change with it
+    }
+
+    // OnDownloadLine predates batching and expects the lines without the id.
+    std::wstring s = raw;
+    if (StartsWith(raw, L"[P]") || StartsWith(raw, L"[DONE]")) {
+        size_t from = raw[1] == L'P' ? 3 : 6;
+        size_t bar = raw.find(L'|', from);
+        if (bar != std::wstring::npos) s = raw.substr(0, from) + raw.substr(bar + 1);
+    }
+    OnDownloadLine(target, s);
+
+    // A video that is done, or has failed, is settled at once. The lines that
+    // follow are about the next one, including those that do not name it, such
+    // as a refused subtitle.
+    if (StartsWith(raw, L"[DONE]") || StartsWith(raw, L"ERROR")) {
+        FinishItem(target, false, std::string());
+        // yt-dlp moves straight on to the next video in this process, so show
+        // it as under way rather than waiting.
+        for (int id : b->second)
+            if (Item* n = FindItem(id); n && n->proc && n->st == St::Queued) {
+                n->st = St::Downloading;
+                InvalidateItem(n->id);
+                break;
+            }
+        UpdateStatus();
+    }
 }
 
 void AddEntries(const VideoMeta& m, const DlOptions& base) {
@@ -1286,7 +1599,11 @@ void RetryItems(const std::vector<int>& ids) {
         it->st = St::Queued;
         it->err.clear();
         it->isNew = false;
+        it->autoRetry = 0;  // asking again by hand earns a fresh budget
     }
+    g_rateStrikes = 0;
+    g_holdUntilMs = 0;
+    g_paceLimit = 0;
     RebuildView();
     StartQueued();
 }
@@ -1295,8 +1612,14 @@ void CancelItems(const std::vector<int>& ids) {
     for (int id : ids) {
         Item* it = FindItem(id);
         if (!it) continue;
-        if (it->st == St::Queued) it->st = St::Canceled;
-        else if (it->proc) ProcCancel(it->proc);
+        if (it->proc) {
+            // In a batch, even a row still waiting will be fetched by that
+            // process, so the process has to go. Its other rows are requeued.
+            g_cancelWanted.insert(it->id);
+            ProcCancel(it->proc);
+        } else if (it->st == St::Queued) {
+            it->st = St::Canceled;
+        }
         InvalidateItem(id);
     }
     UpdateStatus();
@@ -1425,7 +1748,7 @@ bool RunUpdate(bool silent) {
         return false;
     }
     if (g_updateProc) return false;
-    if (!g_dlProc.empty()) {
+    if (!g_dlBatch.empty() || g_subProc) {
         if (!silent) MessageBoxW(GetLastActivePopup(g_hwnd), T(S_MSG_UPDATE_BUSY), APP_NAME, MB_ICONINFORMATION);
         return false;
     }
@@ -1459,6 +1782,7 @@ void OnUpdateExit(const ProcExit* pe) {
     pending.swap(g_pendingLinks);
     for (auto& p : pending) AddLink(p.url, p.mode, p.forceKind);
     StartQueued();
+    StartSubtitleJob();
     UpdateStatus();
     if (g_updateSilent) return;
     std::wstring msg = updated ? T(S_MSG_UPDATED) : current ? T(S_MSG_UPTODATE) : Fmt(T(S_MSG_UPDATE_FAILED), Ellipsize(Trim(out), 600).c_str());
@@ -2084,6 +2408,17 @@ void OnCreate(HWND hwnd) {
     // Checked shortly after the window is up: the first run may have to copy
     // yt-dlp into the user profile, which would otherwise stall startup.
     SetTimer(hwnd, TIMER_AUTOUPDATE, 1200, nullptr);
+    // Subtitle retries do not survive a restart, so what they left behind is
+    // of no further use.
+    {
+        WIN32_FIND_DATAW fd{};
+        HANDLE h = FindFirstFileW(PathJoin(SubJobDir(), L"*.info.json").c_str(), &fd);
+        if (h != INVALID_HANDLE_VALUE) {
+            do DeleteFileW(PathJoin(SubJobDir(), fd.cFileName).c_str());
+            while (FindNextFileW(h, &fd));
+            FindClose(h);
+        }
+    }
 }
 
 bool HandleKey(MSG& m) {
@@ -2379,9 +2714,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     }
     case WM_APP_PROC_LINE: {
         std::unique_ptr<ProcLine> pl((ProcLine*)lp);
-        auto d = g_dlProc.find(pl->id);
-        if (d != g_dlProc.end())
-            if (Item* it = FindItem(d->second)) OnDownloadLine(it, pl->text);
+        OnBatchLine(pl->id, pl->text);
         return 0;
     }
     case WM_APP_PROC_EXIT: {
@@ -2391,6 +2724,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
             g_ytdlpVer = Trim(Split(W(pe->output), L'\n')[0]);
             if (g_ytdlpVer.empty() || g_ytdlpVer.size() > 40) g_ytdlpVer = L"?";
             InvalidateRect(hwnd, &g_rcStatus, FALSE);
+            return 0;
+        }
+        if (g_subProc && pe->id == g_subProc) {
+            OnSubtitleExit(pe.get());
             return 0;
         }
         if (pe->id == g_updateProc) {
@@ -2406,11 +2743,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
             UpdateStatus();
             return 0;
         }
-        auto d = g_dlProc.find(pe->id);
-        if (d != g_dlProc.end()) {
-            int itemId = d->second;
-            g_dlProc.erase(d);
-            OnDownloadExit(itemId, pe.get());
+        auto d = g_dlBatch.find(pe->id);
+        if (d != g_dlBatch.end()) {
+            std::vector<int> ids = d->second;
+            g_dlBatch.erase(d);
+            OnBatchExit(ids, pe.get());
             UpdateStatus();
             return 0;
         }
@@ -2491,6 +2828,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
         } else if (wp == TIMER_AUTOUPDATE) {
             KillTimer(hwnd, TIMER_AUTOUPDATE);
             MaybeAutoUpdate();
+        } else if (wp == TIMER_SUBS) {
+            KillTimer(hwnd, TIMER_SUBS);
+            StartSubtitleJob();
+        } else if (wp == TIMER_QUEUE) {
+            KillTimer(hwnd, TIMER_QUEUE);
+            StartQueued();
         } else if (wp == TIMER_MENUHOVER) {
             KillTimer(hwnd, TIMER_MENUHOVER);
             if (g_menuHover >= 0 && g_menuOpen < 0 && GetForegroundWindow() == hwnd) OpenMenu(g_menuHover, true);

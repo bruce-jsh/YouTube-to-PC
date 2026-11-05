@@ -116,6 +116,9 @@ struct Item {
     HBITMAP thumb = nullptr;
     bool thumbReq = false;
     int proc = 0;
+    int autoRetry = 0;  // times this was requeued after YouTube rate-limited us
+    int subState = 0;   // SUB_*: a subtitle YouTube refused while the video downloaded
+    int subTries = 0;
     DWORD lastPaint = 0;
 };
 
@@ -138,6 +141,13 @@ DlOptions OptionsFromBar(int forceKind = -1);
 std::wstring OptSummary(const DlOptions& o);
 std::wstring AnalyzeArgs(const Tools& t, const std::wstring& url, bool single);
 std::wstring DownloadArgs(const Tools& t, const Item& it);
+std::wstring DownloadArgs(const Tools& t, const std::vector<const Item*>& batch);
+bool SameDownloadOptions(const DlOptions& a, const DlOptions& b);
+
+// Subtitles YouTube refused during a download are fetched again afterwards.
+enum { SUB_OK = 0, SUB_WAIT, SUB_FAILED };
+std::wstring SubJobDir();  // where the saved video information waits for that
+std::wstring SubtitleArgs(const Tools& t, const Item& it, const std::wstring& infoJson);
 std::wstring BuildInfo(const DlOptions& o, const std::wstring& height, const std::wstring& fps,
                        const std::wstring& abr, const std::wstring& ext);
 

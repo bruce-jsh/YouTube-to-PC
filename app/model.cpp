@@ -451,8 +451,11 @@ std::wstring OptSummary(const DlOptions& o) {
     return s;
 }
 
-static std::wstring CommonArgs(const Tools& t) {
-    std::wstring a = L"--ignore-config --no-update --no-warnings";
+// warnings: downloads keep them, because a refused subtitle only ever shows up
+// as a warning and the app needs to see it to fetch the subtitle again later.
+static std::wstring CommonArgs(const Tools& t, bool warnings = false) {
+    std::wstring a = L"--ignore-config --no-update";
+    if (!warnings) a += L" --no-warnings";
     if (!t.qjs.empty()) a += L" --js-runtimes " + QuoteArg(L"quickjs:" + t.qjs);
     if (!t.ffmpegDir.empty()) a += L" --ffmpeg-location " + QuoteArg(t.ffmpegDir);
     std::wstring proxy = Trim(g_set.proxy);
@@ -468,18 +471,46 @@ std::wstring AnalyzeArgs(const Tools& t, const std::wstring& url, bool single) {
     return a + L" " + QuoteArg(url);
 }
 
+// True when two downloads can share one yt-dlp process: everything that shapes
+// the command line has to match, the URL aside.
+bool SameDownloadOptions(const DlOptions& a, const DlOptions& b) {
+    return a.kind == b.kind && a.height == b.height && a.aq == b.aq && a.vfmt == b.vfmt && a.afmt == b.afmt &&
+           a.sub == b.sub && a.subAuto == b.subAuto && a.alang == b.alang && a.dir == b.dir;
+}
+
+std::wstring SubJobDir() { return PathJoin(LocalDataDir(), L"subtitle-jobs"); }
+
+// Text that must reach yt-dlp's output template literally: % starts a field.
+static std::wstring TemplateLiteral(const std::wstring& s) {
+    std::wstring r;
+    for (wchar_t c : s) r += c == L'%' ? std::wstring(L"%%") : std::wstring(1, c);
+    return r;
+}
+
 std::wstring DownloadArgs(const Tools& t, const Item& it) {
     const DlOptions& o = it.opt;
-    std::wstring a = CommonArgs(t);
+    std::wstring a = CommonArgs(t, true);
+    // Without -i a refused subtitle fails the whole video. YouTube refuses
+    // machine-translated subtitles that come without a PO token, so a playlist
+    // with translated subtitles turned on used to fail almost row by row.
+    a += L" -i";
     int retries = kRetries[g_set.retries];
     a += Fmt(L" -R %d --fragment-retries %d", retries, retries);
     a += L" -q --progress --newline --progress-delta 0.3 --no-playlist";
+    // The video id leads every line so one process can carry several downloads
+    // and the list still knows which row each line belongs to.
     a += L" --progress-template " +
-         QuoteArg(L"download:[P]%(progress.downloaded_bytes)s|%(progress.total_bytes)s|%(progress.total_bytes_estimate)s|"
-                  L"%(progress.speed)s|%(progress.eta)s|%(info.vcodec)s");
-    a += L" --print " + QuoteArg(L"after_move:[DONE]%(height)s|%(fps)s|%(abr)s|%(ext)s|%(filepath)s");
+         QuoteArg(L"download:[P]%(info.id)s|%(progress.downloaded_bytes)s|%(progress.total_bytes)s|"
+                  L"%(progress.total_bytes_estimate)s|%(progress.speed)s|%(progress.eta)s|%(info.vcodec)s");
+    a += L" --print " + QuoteArg(L"after_move:[DONE]%(id)s|%(height)s|%(fps)s|%(abr)s|%(ext)s|%(filepath)s");
     std::wstring rate = kRateLimits[g_set.rate].value;
     if (!rate.empty()) a += L" -r " + rate;
+    // YouTube serves a stream at roughly 20 Mbit/s per connection. Fetching it
+    // in pieces over several connections at once is what makes other download
+    // managers fast: measured here, a 1080p stream went from 8 to 28 MiB/s.
+    // Fewer pieces each when more downloads run, about sixteen connections all told.
+    int pieces = std::max(2, std::min(8, 16 / std::max(1, g_set.concurrency)));
+    a += Fmt(L" --extractor-args youtube:formats=dashy -N %d", pieces);
 
     std::wstring langSel = o.alang.empty() ? L"" : L"[language^=" + o.alang + L"]";
     if (o.kind == KIND_VIDEO) {
@@ -520,7 +551,38 @@ std::wstring DownloadArgs(const Tools& t, const Item& it) {
     std::wstring dir = o.dir.empty() ? KnownFolder(FOLDERID_Downloads) : o.dir;
     a += L" -P " + QuoteArg(L"home:" + dir);
     a += L" -o " + QuoteArg(std::wstring(kNameTemplates[g_set.nameTpl].value) + L".%(ext)s");
+    // Keep what yt-dlp learned about the video, so a refused subtitle can be
+    // asked for again later without analysing the video a second time.
+    if (!o.sub.empty()) a += L" -o " + QuoteArg(L"infojson:" + TemplateLiteral(SubJobDir()) + L"\\%(id)s");
+    if (!o.sub.empty()) a += L" --write-info-json";
     a += L" " + QuoteArg(it.url);
+    return a;
+}
+
+// Several videos through one process. yt-dlp fetches the YouTube player once
+// and reuses it for the rest, which saves both time and requests to YouTube.
+std::wstring DownloadArgs(const Tools& t, const std::vector<const Item*>& batch) {
+    if (batch.empty()) return L"";
+    std::wstring a = DownloadArgs(t, *batch.front());
+    for (size_t i = 1; i < batch.size(); ++i) a += L" " + QuoteArg(batch[i]->url);
+    return a;
+}
+
+// Fetches only the subtitles of a finished download, from the information saved
+// while it downloaded. No new analysis, so this costs YouTube a single request.
+// The result is a .srt beside the video, which players pick up by name.
+std::wstring SubtitleArgs(const Tools& t, const Item& it, const std::wstring& infoJson) {
+    const DlOptions& o = it.opt;
+    std::wstring a = CommonArgs(t, true);
+    a += L" --load-info-json " + QuoteArg(infoJson) + L" --skip-download --write-subs";
+    if (o.sub == L"all") a += L" --sub-langs \"all,-live_chat\"";
+    else {
+        if (o.subAuto) a += L" --write-auto-subs";
+        a += L" --sub-langs " + QuoteArg(o.sub);
+    }
+    a += L" --convert-subs srt";
+    a += L" -P " + QuoteArg(L"home:" + PathDir(it.file));
+    a += L" -o " + QuoteArg(TemplateLiteral(PathStem(it.file)) + L".%(ext)s");
     return a;
 }
 

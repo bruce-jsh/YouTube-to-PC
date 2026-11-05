@@ -547,8 +547,14 @@ INT_PTR CALLBACK SetProc(HWND dlg, UINT msg, WPARAM wp, LPARAM lp) {
         P = 1;
         label(S_SET_CONCURRENT, PX, 74, 150);
         {
+            // Say what each step costs, the way 4K Video Downloader does: the
+            // number alone gives no hint that the top of the range invites a
+            // temporary block from YouTube.
             std::vector<std::wstring> items;
-            for (int i = 1; i <= kMaxConcurrent; ++i) items.push_back(Fmt(T(S_SET_CONCURRENT_N), i));
+            for (int i = 1; i <= kMaxConcurrent; ++i) {
+                int tone = i <= 3 ? S_CONC_SAFE : i <= 5 ? S_CONC_STABLE : i <= 7 ? S_CONC_FAST : S_CONC_RISKY;
+                items.push_back(Fmt(T(S_SET_CONCURRENT_N), i) + L"   ·   " + T(tone));
+            }
             d->conc = combo(IDC_S_CONC, PX + 160, 70, 150, items, std::max(0, std::min(kMaxConcurrent - 1, s.concurrency - 1)));
         }
         note(S_SET_CONCURRENT_NOTE, 104, 40);
