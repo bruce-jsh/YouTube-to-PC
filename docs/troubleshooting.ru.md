@@ -135,7 +135,7 @@ QuickJS с их официальных страниц, всего примерн
 с файлом и выполните:
 
 ```powershell
-Get-FileHash .\YouTubeToPC-Setup-1.3.2.exe -Algorithm SHA256
+Get-FileHash .\YouTubeToPC-Setup-1.3.3.exe -Algorithm SHA256
 ```
 
 Если значение совпадает с тем, что указано на

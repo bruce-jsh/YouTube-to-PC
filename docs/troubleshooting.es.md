@@ -135,7 +135,7 @@ Cada página de versión indica el SHA-256 del instalador. Abre PowerShell en la
 carpeta donde está el archivo y ejecuta:
 
 ```powershell
-Get-FileHash .\YouTubeToPC-Setup-1.3.2.exe -Algorithm SHA256
+Get-FileHash .\YouTubeToPC-Setup-1.3.3.exe -Algorithm SHA256
 ```
 
 Si coincide con el valor de la

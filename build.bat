@@ -6,7 +6,7 @@ setlocal EnableExtensions
 cd /d "%~dp0"
 
 rem ---- configuration -------------------------------------------------------
-set "VERSION=1.3.2"
+set "VERSION=1.3.3"
 rem Set MSYS_BIN beforehand to build elsewhere, which is what CI does.
 if not defined MSYS_BIN set "MSYS_BIN=C:\msys64\ucrt64\bin"
 rem --------------------------------------------------------------------------

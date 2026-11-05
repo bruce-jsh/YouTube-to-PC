@@ -126,7 +126,7 @@ QuickJS จากหน้าทางการของแต่ละโคร
 แล้วรัน
 
 ```powershell
-Get-FileHash .\YouTubeToPC-Setup-1.3.2.exe -Algorithm SHA256
+Get-FileHash .\YouTubeToPC-Setup-1.3.3.exe -Algorithm SHA256
 ```
 
 ถ้าตรงกับค่าใน

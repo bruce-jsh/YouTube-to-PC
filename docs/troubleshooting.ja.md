@@ -130,7 +130,7 @@ yt-dlp を取得できない、インターネット接続を確認してほし�
 PowerShell を開き、次を実行してください。
 
 ```powershell
-Get-FileHash .\YouTubeToPC-Setup-1.3.2.exe -Algorithm SHA256
+Get-FileHash .\YouTubeToPC-Setup-1.3.3.exe -Algorithm SHA256
 ```
 
 [リリースページ](https://github.com/bruce-jsh/YouTube-to-PC/releases/latest)
